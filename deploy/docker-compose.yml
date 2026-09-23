@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # TimescaleDB / PostgreSQL Storage
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: ricoz_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ricozappmon
+      POSTGRES_USER: ricoz_user
+      POSTGRES_PASSWORD: ricoz_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ricoz_user -d ricozappmon"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Background Scheduler & Rate Limiting
+  redis:
+    image: redis:7-alpine
+    container_name: ricoz_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  # Core Backend API & Worker
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: ricoz_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+asyncpg://ricoz_user:ricoz_password_2026@postgres:5432/ricozappmon
+      SYNC_DATABASE_URL: postgresql://ricoz_user:ricoz_password_2026@postgres:5432/ricozappmon
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ricoz-appmon-super-secure-secret-key-2026-production-grade
+    ports:
+      - "8000:8000"
+
+  # OpenTelemetry Collector
+  collector:
+    image: otel/opentelemetry-collector-contrib:0.95.0
+    container_name: ricoz_collector
+    restart: unless-stopped
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ../collector/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+    depends_on:
+      - backend
+
+  # React Dashboard
+  dashboard:
+    build:
+      context: ../dashboard
+      dockerfile: Dockerfile
+    container_name: ricoz_dashboard
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

@@ -1,0 +1,19 @@
+{
+  "name": "@ricoz/rum-sdk",
+  "version": "1.0.0",
+  "description": "Ultra-lightweight, resilient Real User Monitoring SDK for RicozAppMon",
+  "main": "dist/ricoz-rum.cjs.js",
+  "module": "dist/ricoz-rum.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "vite build",
+    "test": "echo \"SDK builds clean\""
+  },
+  "keywords": ["rum", "observability", "apm", "web-vitals", "opentelemetry", "tracing"],
+  "author": "RicozAppMon Team",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}

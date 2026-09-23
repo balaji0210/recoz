@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RicozAppMon - Development Status & Completion Audit</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.5;
+      font-size: 11.5pt;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .header-banner {
+      border-bottom: 2px solid #4f46e5;
+      padding-bottom: 14px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .brand-title {
+      font-size: 22pt;
+      font-weight: 800;
+      color: #1e1b4b;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      background: #4f46e5;
+      color: #ffffff;
+      font-size: 9pt;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .meta-sub {
+      font-size: 9.5pt;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .report-date {
+      font-size: 9.5pt;
+      color: #64748b;
+      text-align: right;
+      font-weight: 500;
+    }
+
+    /* Scoreboard */
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .score-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .score-card.primary {
+      background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%);
+      border: 1.5px solid #818cf8;
+    }
+
+    .score-label {
+      font-size: 9pt;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    .score-val {
+      font-size: 26pt;
+      font-weight: 800;
+      color: #1e1b4b;
+      line-height: 1.1;
+    }
+
+    .score-val.highlight {
+      color: #4f46e5;
+    }
+
+    .score-val.remaining {
+      color: #d97706;
+    }
+
+    .progress-bar-container {
+      margin-top: 8px;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5 0%, #10b981 100%);
+      border-radius: 999px;
+    }
+
+    /* Headings */
+    h2 {
+      font-size: 14pt;
+      font-weight: 800;
+      color: #1e293b;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      font-size: 9.5pt;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 8.5pt;
+      text-align: left;
+      padding: 8px 10px;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    .weight-col {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    .pct-col {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 7.5pt;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-danger { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+    .badge-info { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
+
+    /* Component Sections */
+    .component-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      background: #ffffff;
+      page-break-inside: avoid;
+    }
+
+    .comp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .comp-title {
+      font-size: 11pt;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .comp-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11pt;
+      font-weight: 800;
+      color: #4f46e5;
+    }
+
+    .comp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 9pt;
+    }
+
+    .comp-block {
+      background: #f8fafc;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #edf2f7;
+    }
+
+    .block-label {
+      font-weight: 700;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .block-label.done { color: #15803d; }
+    .block-label.partial { color: #b45309; }
+    .block-label.remaining { color: #4338ca; }
+    .block-label.bugs { color: #b91c1c; }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      position: relative;
+      padding-left: 12px;
+      margin-bottom: 3px;
+      line-height: 1.35;
+    }
+
+    li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #64748b;
+      font-weight: bold;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: #0f172a;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .alert-box {
+      border-left: 4px solid #ef4444;
+      background: #fff5f5;
+      padding: 10px 14px;
+      border-radius: 4px;
+      margin: 12px 0;
+      font-size: 9.5pt;
+    }
+
+    .task-list {
+      font-size: 9pt;
+      width: 100%;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .task-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 8pt;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      min-width: 55px;
+      text-align: center;
+    }
+
+    .task-desc {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .task-tag {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: EXECUTIVE SUMMARY & SCORING -->
+  <div class="header-banner">
+    <div>
+      <div class="brand-title">
+        ⚡ RicozAppMon
+        <span class="brand-badge">Audit Report</span>
+      </div>
+      <div class="meta-sub">Enterprise Observability & Application Performance Monitoring Platform</div>
+    </div>
+    <div class="report-date">
+      <strong>Inspection Date:</strong> September 22, 2026<br>
+      <strong>Audit Standard:</strong> Functional Code & Execution Verification
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-card primary">
+      <div class="score-label">Overall Project Completion</div>
+      <div class="score-val highlight">75.5%</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" style="width: 75.5%;"></div>
+      </div>
+    </div>
+    <div class="score-card">
+      <div class="score-label">Development Completed</div>
+      <div class="score-val">75.5%</div>
+      <div style="font-size: 8pt; color: #166534; font-weight: 700; margin-top: 6px;">● MVP / STAGING READY</div>
+    </div>
+    <div class="score-card">
+      <div class="score-label">Development Remaining</div>
+      <div class="score-val remaining">24.5%</div>
+      <div style="font-size: 8pt; color: #b45309; font-weight: 700; margin-top: 6px;">14 TARGETED TASKS TO PROD</div>
+    </div>
+  </div>
+
+  <h2>📊 Weighted Scoring Calculation Model</h2>
+  <p style="font-size: 9.5pt; color: #64748b; margin-bottom: 10px;">
+    The overall completion percentage is derived using a multi-factor weighted evaluation based strictly on actual codebase inspection, build outputs, and automated test passes.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th class="weight-col">Weight</th>
+        <th class="pct-col">Completion</th>
+        <th class="pct-col">Weighted Contrib</th>
+        <th>Audit Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Frontend (Dashboard & Web SDK)</strong></td>
+        <td class="weight-col">15%</td>
+        <td class="pct-col">75.0%</td>
+        <td class="pct-col">11.25%</td>
+        <td>7 pages complete, Vite build 0 errors; lacks login UI & creation modals.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Backend Core (FastAPI & Workers)</strong></td>
+        <td class="weight-col">18%</td>
+        <td class="pct-col">82.0%</td>
+        <td class="pct-col">14.76%</td>
+        <td>12 REST routers, 6 services, background scheduler; non-webhook channels simulated.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Database (ORM, Schema, Engine)</strong></td>
+        <td class="weight-col">10%</td>
+        <td class="pct-col">78.0%</td>
+        <td class="pct-col">7.80%</td>
+        <td>13 async models, SQLite/PostgreSQL support; lacks Alembic & Timescale hypertables.</td>
+      </tr>
+      <tr>
+        <td><strong>4. API Integration & Monitored Services</strong></td>
+        <td class="weight-col">10%</td>
+        <td class="pct-col">70.0%</td>
+        <td class="pct-col">7.00%</td>
+        <td>RUM & OTel ingestion active; demo apps lack live OTel SDK exporters.</td>
+      </tr>
+      <tr>
+        <td><strong>5. Authentication & RBAC</strong></td>
+        <td class="weight-col">8%</td>
+        <td class="pct-col">80.0%</td>
+        <td class="pct-col">6.40%</td>
+        <td>JWT, Bcrypt, Ingest Key SHA-256, Team RBAC; lacks refresh tokens & UI gate.</td>
+      </tr>
+      <tr>
+        <td><strong>6. Core Observability Features</strong></td>
+        <td class="weight-col">18%</td>
+        <td class="pct-col">82.0%</td>
+        <td class="pct-col">14.76%</td>
+        <td>Web Vitals, VLQ Symbolicator, Waterfall Bottlenecks, Synthetics, Alerting.</td>
+      </tr>
+      <tr>
+        <td><strong>7. Testing & Quality Assurance</strong></td>
+        <td class="weight-col">8%</td>
+        <td class="pct-col">45.0%</td>
+        <td class="pct-col">3.60%</td>
+        <td>10/10 service tests pass; E2E test fails offline; 0 frontend/SDK unit tests.</td>
+      </tr>
+      <tr>
+        <td><strong>8. UI/UX Design & Polish</strong></td>
+        <td class="weight-col">5%</td>
+        <td class="pct-col">82.0%</td>
+        <td class="pct-col">4.10%</td>
+        <td>Clean glassmorphism, Light/Dark mode, responsive gauges; missing mobile drawer.</td>
+      </tr>
+      <tr>
+        <td><strong>9. Deployment & DevOps Setup</strong></td>
+        <td class="weight-col">5%</td>
+        <td class="pct-col">72.0%</td>
+        <td class="pct-col">3.60%</td>
+        <td>5-container Docker Compose, Nginx, Dockerfiles; lacks CI/CD and K8s manifests.</td>
+      </tr>
+      <tr>
+        <td><strong>10. Documentation & Specs</strong></td>
+        <td class="weight-col">3%</td>
+        <td class="pct-col">75.0%</td>
+        <td class="pct-col">2.25%</td>
+        <td>Rich README, Mermaid architecture, Swagger/ReDoc; lacks SDK package guide.</td>
+      </tr>
+      <tr style="background: #eef2ff; font-weight: 800;">
+        <td><strong>TOTAL CALCULATED SCORE</strong></td>
+        <td class="weight-col"><strong>100%</strong></td>
+        <td class="pct-col">—</td>
+        <td class="pct-col" style="color: #4f46e5; font-size: 11pt;">75.52%</td>
+        <td><strong>~75.5% Completed / 24.5% Remaining</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PAGE 2: COMPONENT AUDIT PART 1 -->
+  <div class="page-break"></div>
+
+  <h2>🔬 Comprehensive Subsystem Breakdown (1/2)</h2>
+
+  <!-- Frontend -->
+  <div class="component-box">
+    <div class="comp-header">
+      <div class="comp-title">1. Frontend (Dashboard & Web SDK Client)</div>
+      <div class="comp-pct">75% Completed</div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-block">
+        <div class="block-label done">✔ Completed</div>
+        <ul>
+          <li>7 complete pages: Overview, RUM, Errors, Traces, Synthetics, Alerts, Settings.</li>
+          <li>Interactive Trace Waterfall visualizer with expandable span attribute drawers.</li>
+          <li>SVG Web Vital Gauges (LCP, INP, CLS, TTFB, FCP) with Google threshold brackets.</li>
+          <li>Light / Dark theme toggle with persistence in <code>localStorage</code>.</li>
+          <li>Resilient fallback demonstration data in <code>api/client.ts</code>.</li>
+          <li>Vite build compiles cleanly (0 TypeScript/CSS errors).</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label partial">▲ Partially Completed</div>
+        <ul>
+          <li>Instant synthetic "Test Now" modal runs, but "New Synthetic Check" modal is omitted in JSX.</li>
+          <li>Alerts acknowledge/resolve works, but channel adapter testing runs simulated timers.</li>
+          <li>Settings page displays app credentials but lacks app creation/deletion dialogs.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label remaining">⏳ Still Remaining</div>
+        <ul>
+          <li>Dedicated Login, Registration, and Team Switcher views.</li>
+          <li>Modal forms for: New Synthetic Check, New Alert Rule, Webhook setup.</li>
+          <li>Source Map drag-and-drop file upload UI.</li>
+          <li>Historical time-series trend charts (e.g. latency & error volume over 24h).</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label bugs">⚠ Bugs & Gaps</div>
+        <ul>
+          <li><code>showCreateModal</code> state is declared in <code>SyntheticsPage.tsx</code>, but no modal JSX markup exists.</li>
+          <li>Dashboard assumes logged-in admin directly without an authentication gate.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backend Core -->
+  <div class="component-box">
+    <div class="comp-header">
+      <div class="comp-title">2. Backend Core (FastAPI, Services & Workers)</div>
+      <div class="comp-pct">82% Completed</div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-block">
+        <div class="block-label done">✔ Completed</div>
+        <ul>
+          <li>12 modular REST routers in <code>backend/app/api/v1/</code>.</li>
+          <li>Gzip-compressed batch RUM ingestion and OpenTelemetry OTLP JSON ingestion.</li>
+          <li>Base64 VLQ source map decoder and stack symbolicator.</li>
+          <li>Automated bottleneck detector in distributed traces.</li>
+          <li>Anti-flapping alert state machine (<code>OK</code> &rarr; <code>PENDING</code> &rarr; <code>FIRING</code> &rarr; <code>RESOLVED</code>).</li>
+          <li>Background async loop (<code>scheduler.py</code>) running synthetics and evaluating rules every 30s.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label partial">▲ Partially Completed</div>
+        <ul>
+          <li>Webhook notification makes live HTTP POST requests; Email, PagerDuty, Jira, and ServiceNow adapters only write log messages.</li>
+          <li>Rate limiting is implemented in-memory rather than distributed Redis.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label remaining">⏳ Still Remaining</div>
+        <ul>
+          <li>Real integrations for PagerDuty Events v2, Jira REST, ServiceNow, and SMTP/SES.</li>
+          <li>Redis-backed distributed scheduler/queue for multi-worker scaling.</li>
+          <li>Automated database partition cleaner for retention windows (30/90 days).</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label bugs">⚠ Bugs & Gaps</div>
+        <ul>
+          <li>Stack trace file matching in <code>errors.py</code> line 95 uses substring check which may cause false positives on common filenames.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Database -->
+  <div class="component-box">
+    <div class="comp-header">
+      <div class="comp-title">3. Database (Models, Engine & Storage)</div>
+      <div class="comp-pct">78% Completed</div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-block">
+        <div class="block-label done">✔ Completed</div>
+        <ul>
+          <li>13 SQLAlchemy 2.0 async models with foreign keys, relationships, and cascades.</li>
+          <li>Dual-driver engine: zero-config SQLite (<code>aiosqlite</code>) and PostgreSQL (<code>asyncpg</code>).</li>
+          <li>Automatic startup seeding of default Admin, Team, Application, Rules, and Checks.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label partial">▲ Partially Completed</div>
+        <ul>
+          <li><code>init-db.sql</code> enables TimescaleDB extension, but does not convert tables to hypertables.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label remaining">⏳ Still Remaining</div>
+        <ul>
+          <li>Alembic database migrations setup with versioned migration scripts.</li>
+          <li>TimescaleDB continuous aggregates and retention policy commands.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label bugs">⚠ Bugs & Gaps</div>
+        <ul>
+          <li>Schema relies entirely on <code>Base.metadata.create_all</code> without migration rollback capability.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: COMPONENT AUDIT PART 2 -->
+  <div class="page-break"></div>
+
+  <h2>🔬 Comprehensive Subsystem Breakdown (2/2)</h2>
+
+  <!-- API Integration -->
+  <div class="component-box">
+    <div class="comp-header">
+      <div class="comp-title">4. API Integration & Monitored Services</div>
+      <div class="comp-pct">70% Completed</div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-block">
+        <div class="block-label done">✔ Completed</div>
+        <ul>
+          <li>Browser RUM SDK batches and transmits payloads to <code>/api/v1/ingest/rum</code>.</li>
+          <li>OTel collector config routes spans to <code>/api/v1/ingest/traces</code>.</li>
+          <li>W3C <code>traceparent</code> header injected into fetch/XHR network requests.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label partial">▲ Partially Completed</div>
+        <ul>
+          <li>Collector config uses hardcoded ingest key that must manually match DB.</li>
+          <li>Demo microservices simulate endpoints but lack real OpenTelemetry SDK packages.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label remaining">⏳ Still Remaining</div>
+        <ul>
+          <li>Real OTel SDK exporters in <code>node-api</code> and <code>python-auth</code>.</li>
+          <li>WebSocket live update push to the dashboard.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label bugs">⚠ Bugs & Gaps</div>
+        <ul>
+          <li>Demo storefront calls microservices, but microservices do not emit live OTLP spans.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth & RBAC -->
+  <div class="component-box">
+    <div class="comp-header">
+      <div class="comp-title">5. Authentication & Authorization (RBAC)</div>
+      <div class="comp-pct">80% Completed</div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-block">
+        <div class="block-label done">✔ Completed</div>
+        <ul>
+          <li>JWT HMAC SHA-256 tokens and password hashing with Bcrypt/PBKDF2.</li>
+          <li>Ingest key generation with SHA-256 hashing and prefix masking.</li>
+          <li>Role hierarchy (<code>admin</code> &gt; <code>engineer</code> &gt; <code>viewer</code>) with team enforcement.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label partial">▲ Partially Completed</div>
+        <ul>
+          <li>Access token duration is 7 days; no refresh token rotation or revocation blacklist.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label remaining">⏳ Still Remaining</div>
+        <ul>
+          <li>Refresh tokens and logout token invalidation.</li>
+          <li>Frontend login gate and route guards.</li>
+          <li>SSO / OAuth2 (Google, GitHub, OIDC).</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label bugs">⚠ Bugs & Gaps</div>
+        <ul>
+          <li>No frontend login gate enforcing authentication before loading dashboard data.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testing & Bugs -->
+  <div class="component-box">
+    <div class="comp-header">
+      <div class="comp-title">7. Testing & Quality Assurance</div>
+      <div class="comp-pct">45% Completed</div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-block">
+        <div class="block-label done">✔ Completed</div>
+        <ul>
+          <li><code>test_all_services.py</code>: <strong>10 out of 10 tests pass (100%)</strong> covering hashing, JWT, keys, error normalization, VLQ decoding, stack frames, waterfall, service map, and alert conditions.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label partial">▲ Partially Completed</div>
+        <ul>
+          <li><code>test_e2e_pipeline.py</code> (218 lines) is written against <code>http://localhost:8000</code> rather than in-process <code>ASGITransport(app=app)</code>.</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label remaining">⏳ Still Remaining</div>
+        <ul>
+          <li>Vitest / React Testing Library unit tests for dashboard components.</li>
+          <li>Jest / Vitest unit tests for RUM SDK modules (vitals, interceptor, scrubber).</li>
+        </ul>
+      </div>
+      <div class="comp-block">
+        <div class="block-label bugs">⚠ Bugs & Gaps</div>
+        <ul>
+          <li>Running <code>pytest</code> standalone fails 1 test with <code>httpx.ConnectError</code> if backend is not already running.</li>
+          <li>In <code>demo-apps/traffic-generator.py</code> line 16: <code>def generate_hex(length: number):</code> uses TypeScript syntax instead of Python <code>int</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: REMAINING TASKS & ROADMAP -->
+  <div class="page-break"></div>
+
+  <h2>📋 Master Summary & Production Readiness Action Plan</h2>
+
+  <div class="alert-box">
+    <strong>Critical Finding:</strong> The platform core architecture is robust and state-of-the-art. To reach 100% production-ready enterprise grade, exactly <strong>14 targeted development tasks</strong> remain.
+  </div>
+
+  <h3>Estimated Number of Development Tasks Remaining: 14</h3>
+
+  <div class="task-list">
+    <div class="task-item">
+      <span class="task-num">TASK 01</span>
+      <span class="task-desc">Refactor <code>test_e2e_pipeline.py</code> to use <code>httpx.AsyncClient(transport=ASGITransport(app=app))</code> so pytest passes 100% standalone.</span>
+      <span class="task-tag badge-danger">Bug Fix</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 02</span>
+      <span class="task-desc">Fix type annotation in <code>demo-apps/traffic-generator.py</code> line 16 (<code>number</code> &rarr; <code>int</code>).</span>
+      <span class="task-tag badge-danger">Bug Fix</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 03</span>
+      <span class="task-desc">Implement the "Create Synthetic Check" modal form in <code>SyntheticsPage.tsx</code>.</span>
+      <span class="task-tag badge-info">Frontend</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 04</span>
+      <span class="task-desc">Implement the "Create & Edit Alert Rule" modal form in <code>AlertsPage.tsx</code>.</span>
+      <span class="task-tag badge-info">Frontend</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 05</span>
+      <span class="task-desc">Implement Application Creation, Deletion, and Notification Channel configuration dialogs in <code>SettingsPage.tsx</code>.</span>
+      <span class="task-tag badge-info">Frontend</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 06</span>
+      <span class="task-desc">Add a Source Map <code>.map</code> file upload dropper in Settings / Errors view.</span>
+      <span class="task-tag badge-info">Frontend</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 07</span>
+      <span class="task-desc">Build Login, Registration, and Team Switcher views with authentication routing guards.</span>
+      <span class="task-tag badge-warning">Auth / UI</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 08</span>
+      <span class="task-desc">Implement live outbound API dispatchers for PagerDuty v2, Jira REST, ServiceNow, and SMTP/SES in <code>notification_manager.py</code>.</span>
+      <span class="task-tag badge-warning">Backend</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 09</span>
+      <span class="task-desc">Set up Alembic migration version control and execute TimescaleDB hypertable creation in <code>init-db.sql</code>.</span>
+      <span class="task-tag badge-warning">Database</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 10</span>
+      <span class="task-desc">Connect distributed Redis token bucket rate limiting in <code>rbac.py</code>.</span>
+      <span class="task-tag badge-warning">Backend</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 11</span>
+      <span class="task-desc">Add official OpenTelemetry SDK packages to <code>node-api</code> and <code>python-auth</code> to export live spans.</span>
+      <span class="task-tag badge-info">Demo Apps</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 12</span>
+      <span class="task-desc">Add historical time-series charts (latency percentiles and error rates over 1h/24h/7d).</span>
+      <span class="task-tag badge-info">Frontend</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 13</span>
+      <span class="task-desc">Add Vitest unit test suites for <code>dashboard</code> and <code>rum-sdk</code>.</span>
+      <span class="task-tag badge-success">Testing</span>
+    </div>
+    <div class="task-item">
+      <span class="task-num">TASK 14</span>
+      <span class="task-desc">Create GitHub Actions CI/CD workflow (<code>.github/workflows/ci.yml</code>) and <code>.env.example</code>.</span>
+      <span class="task-tag badge-success">DevOps</span>
+    </div>
+  </div>
+
+  <div style="margin-top: 30px; padding-top: 14px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; font-size: 8.5pt; color: #64748b;">
+    <div><strong>RicozAppMon Observability Platform</strong> • Engineering Status Report</div>
+    <div>Page 4 of 4 • Confidential & Internal</div>
+  </div>
+
+</body>
+</html>
