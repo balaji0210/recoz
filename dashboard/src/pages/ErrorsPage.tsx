@@ -9,10 +9,16 @@ interface ErrorsPageProps {
 
 export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
   const [errorGroups, setErrorGroups] = useState<ErrorGroupItem[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string>('unhandled');
+  const [statusFilter, setStatusFilter] = useState<string>(() => {
+    return localStorage.getItem('rz_errors_status_filter') ?? '';
+  });
   const [selectedGroup, setSelectedGroup] = useState<ErrorGroupItem | null>(null);
   const [groupDetail, setGroupDetail] = useState<any | null>(null);
   const [actionToast, setActionToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('rz_errors_status_filter', statusFilter);
+  }, [statusFilter]);
 
   useEffect(() => {
     loadErrors();
@@ -22,8 +28,17 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
     try {
       const data = await api.getErrorGroups(appId, statusFilter || undefined);
       setErrorGroups(data);
-      if (data.length > 0 && !selectedGroup) {
-        handleSelectGroup(data[0]);
+      if (data.length > 0) {
+        if (!selectedGroup) {
+          handleSelectGroup(data[0]);
+        } else {
+          const fresh = data.find(g => g.id === selectedGroup.id);
+          if (fresh) {
+            setSelectedGroup(fresh);
+          } else {
+            handleSelectGroup(data[0]);
+          }
+        }
       }
     } catch (e) {
       console.error(e);

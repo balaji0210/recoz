@@ -11,6 +11,23 @@ class ApiClient {
 
   constructor() {
     this.token = localStorage.getItem('rz_auth_token');
+    this.loadState();
+  }
+
+  private loadState() {
+    try {
+      const g = localStorage.getItem('rz_error_groups');
+      if (g) this.mockErrorGroups = JSON.parse(g);
+      const inc = localStorage.getItem('rz_incidents');
+      if (inc) this.mockIncidents = JSON.parse(inc);
+    } catch {}
+  }
+
+  private saveState() {
+    try {
+      localStorage.setItem('rz_error_groups', JSON.stringify(this.mockErrorGroups));
+      localStorage.setItem('rz_incidents', JSON.stringify(this.mockIncidents));
+    } catch {}
   }
 
   public setToken(token: string | null) {
@@ -166,7 +183,19 @@ class ApiClient {
     try {
       const url = status ? `/errors/groups?app_id=${appId}&status=${status}` : `/errors/groups?app_id=${appId}`;
       const data = await this.request<ErrorGroupItem[]>(url);
-      if (data && data.length > 0) return data;
+      if (Array.isArray(data)) {
+        // Sync local cache
+        data.forEach(item => {
+          const idx = this.mockErrorGroups.findIndex(g => g.id === item.id);
+          if (idx >= 0) {
+            this.mockErrorGroups[idx] = item;
+          } else {
+            this.mockErrorGroups.push(item);
+          }
+        });
+        this.saveState();
+        return data;
+      }
     } catch (e) {
       console.warn("Could not fetch error groups from backend, using fallback cache:", e);
     }
@@ -231,17 +260,18 @@ class ApiClient {
   }
 
   async updateErrorGroupStatus(groupId: string, status: string) {
+    const item = this.mockErrorGroups.find(g => g.id === groupId);
+    if (item) {
+      item.status = status as any;
+      this.saveState();
+    }
     try {
       const res = await this.request<any>(`/errors/groups/${groupId}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status })
       });
-      const item = this.mockErrorGroups.find(g => g.id === groupId);
-      if (item) item.status = status as any;
       return res;
     } catch (e) {
-      const item = this.mockErrorGroups.find(g => g.id === groupId);
-      if (item) item.status = status as any;
       return { id: groupId, status, message: `Error group marked as ${status}` };
     }
   }
@@ -399,8 +429,9 @@ class ApiClient {
   async getIncidents(appId: string): Promise<IncidentItem[]> {
     try {
       const live = await this.request<IncidentItem[]>(`/alerts/incidents?app_id=${appId}`);
-      if (live && live.length > 0) {
+      if (Array.isArray(live)) {
         this.mockIncidents[appId] = live;
+        this.saveState();
         return live;
       }
     } catch (e) {
@@ -412,48 +443,36 @@ class ApiClient {
         { id: 'inc-1', alert_rule_id: 'rule-1', application_id: appId, title: 'Alert: High JS Error Rate breached (6.8% > 5.0%)', severity: 'critical', status: 'OPEN', current_value: 6.8, threshold: 5.0, triggered_at: new Date(Date.now() - 480000).toISOString() },
         { id: 'inc-2', alert_rule_id: 'rule-2', application_id: appId, title: 'Alert: Slow P95 Page Load breached (2840ms > 2500ms)', severity: 'warning', status: 'RESOLVED', current_value: 1940, threshold: 2500, triggered_at: new Date(Date.now() - 3600000).toISOString(), resolved_at: new Date(Date.now() - 2400000).toISOString() }
       ];
+      this.saveState();
     }
     return this.mockIncidents[appId];
   }
 
   async acknowledgeIncident(incidentId: string) {
+    Object.values(this.mockIncidents).forEach(list => {
+      const item = list.find(i => i.id === incidentId);
+      if (item) item.status = 'ACKNOWLEDGED';
+    });
+    this.saveState();
     try {
-      const res = await this.request<any>(`/alerts/incidents/${incidentId}/acknowledge`, { method: 'POST' });
-      // Update local cache as well
-      Object.values(this.mockIncidents).forEach(list => {
-        const item = list.find(i => i.id === incidentId);
-        if (item) item.status = 'ACKNOWLEDGED';
-      });
-      return res;
+      return await this.request<any>(`/alerts/incidents/${incidentId}/acknowledge`, { method: 'POST' });
     } catch (e) {
-      Object.values(this.mockIncidents).forEach(list => {
-        const item = list.find(i => i.id === incidentId);
-        if (item) item.status = 'ACKNOWLEDGED';
-      });
       return { id: incidentId, status: 'ACKNOWLEDGED', message: 'Incident acknowledged locally' };
     }
   }
 
   async resolveIncident(incidentId: string) {
+    Object.values(this.mockIncidents).forEach(list => {
+      const item = list.find(i => i.id === incidentId);
+      if (item) {
+        item.status = 'RESOLVED';
+        item.resolved_at = new Date().toISOString();
+      }
+    });
+    this.saveState();
     try {
-      const res = await this.request<any>(`/alerts/incidents/${incidentId}/resolve`, { method: 'POST' });
-      // Update local cache as well
-      Object.values(this.mockIncidents).forEach(list => {
-        const item = list.find(i => i.id === incidentId);
-        if (item) {
-          item.status = 'RESOLVED';
-          item.resolved_at = new Date().toISOString();
-        }
-      });
-      return res;
+      return await this.request<any>(`/alerts/incidents/${incidentId}/resolve`, { method: 'POST' });
     } catch (e) {
-      Object.values(this.mockIncidents).forEach(list => {
-        const item = list.find(i => i.id === incidentId);
-        if (item) {
-          item.status = 'RESOLVED';
-          item.resolved_at = new Date().toISOString();
-        }
-      });
       return { id: incidentId, status: 'RESOLVED', message: 'Incident resolved locally' };
     }
   }

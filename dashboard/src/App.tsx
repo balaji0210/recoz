@@ -12,11 +12,17 @@ import { api } from './api/client';
 import { Application } from './types';
 
 export const App: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState<string>('overview');
+  const [currentTab, setCurrentTab] = useState<string>(() => {
+    return localStorage.getItem('rz_active_tab') || 'overview';
+  });
   const [timeRange, setTimeRange] = useState<string>('24h');
   const [applications, setApplications] = useState<Application[]>([]);
   const [selectedAppId, setSelectedAppId] = useState<string>('demo-ecommerce-app-id');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('rz_active_tab', currentTab);
+  }, [currentTab]);
   
   // Theme state defaulting to light mode
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
