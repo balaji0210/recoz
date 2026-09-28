@@ -20,15 +20,20 @@ class NotificationDispatcher:
         Returns: (success_bool, error_message_if_any)
         """
         try:
-            if channel_type == "webhook":
+            ch = channel_type.lower()
+            if ch == "webhook":
                 return await self._send_webhook(config, incident)
-            elif channel_type == "email":
+            elif ch == "slack":
+                return await self._send_slack(config, incident)
+            elif ch == "discord":
+                return await self._send_discord(config, incident)
+            elif ch == "email":
                 return await self._send_email(config, incident)
-            elif channel_type in ["sms", "pagerduty"]:
+            elif ch in ["sms", "pagerduty"]:
                 return await self._send_pagerduty_sms(config, incident)
-            elif channel_type == "jira":
+            elif ch == "jira":
                 return await self._send_jira_ticket(config, incident)
-            elif channel_type == "servicenow":
+            elif ch == "servicenow":
                 return await self._send_servicenow_incident(config, incident)
             else:
                 logger.warning(f"Unknown notification channel type: {channel_type}")
@@ -52,10 +57,47 @@ class NotificationDispatcher:
             return True, None
         return False, f"Webhook returned status {res.status_code}: {res.text[:200]}"
 
+    async def _send_slack(self, config: Dict[str, Any], incident: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+        url = config.get("webhook_url")
+        if not url:
+            return False, "Missing Slack webhook_url in configuration"
+        
+        severity = incident.get("severity", "warning").upper()
+        title = incident.get("title", "Incident triggered")
+        status = incident.get("status", "OPEN")
+        cur_val = incident.get("current_value", "N/A")
+        thresh = incident.get("threshold", "N/A")
+
+        payload = {
+            "text": f":warning: *[{severity}] {title}*\n*Status:* {status} | *Value:* {cur_val} (Threshold: {thresh})"
+        }
+        res = await self.client.post(url, json=payload)
+        if res.is_success:
+            return True, None
+        return False, f"Slack webhook returned status {res.status_code}: {res.text[:200]}"
+
+    async def _send_discord(self, config: Dict[str, Any], incident: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+        url = config.get("webhook_url")
+        if not url:
+            return False, "Missing Discord webhook_url in configuration"
+        
+        color = 0xe11d48 if incident.get("severity") == "critical" else 0xd97706
+        payload = {
+            "embeds": [{
+                "title": f"[{incident.get('severity', 'warning').upper()}] {incident.get('title')}",
+                "description": f"Status: **{incident.get('status')}**\nCurrent Value: {incident.get('current_value')} | Threshold: {incident.get('threshold')}",
+                "color": color,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }]
+        }
+        res = await self.client.post(url, json=payload)
+        if res.is_success:
+            return True, None
+        return False, f"Discord webhook returned status {res.status_code}: {res.text[:200]}"
+
     async def _send_email(self, config: Dict[str, Any], incident: Dict[str, Any]) -> tuple[bool, Optional[str]]:
         recipient = config.get("recipient_email", "admin@example.com")
         logger.info(f"[EMAIL NOTIFICATION] To: {recipient} | Subject: [{incident.get('severity', 'WARNING').upper()}] {incident.get('title')} | Status: {incident.get('status')}")
-        # In cloud, integrate with AWS SES or SMTP.
         return True, None
 
     async def _send_pagerduty_sms(self, config: Dict[str, Any], incident: Dict[str, Any]) -> tuple[bool, Optional[str]]:

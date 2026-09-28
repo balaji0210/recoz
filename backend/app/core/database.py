@@ -44,8 +44,23 @@ async def get_db():
         finally:
             await session.close()
 
+from sqlalchemy import inspect, text
+
+def _run_migrations(connection):
+    inspector = inspect(connection)
+    table_names = inspector.get_table_names()
+    if "source_maps" in table_names:
+        columns = [c["name"] for c in inspector.get_columns("source_maps")]
+        if "storage_backend" not in columns:
+            connection.execute(text("ALTER TABLE source_maps ADD COLUMN storage_backend VARCHAR(32) DEFAULT 'local'"))
+        if "storage_path" not in columns:
+            connection.execute(text("ALTER TABLE source_maps ADD COLUMN storage_path TEXT"))
+        if "file_size_bytes" not in columns:
+            connection.execute(text("ALTER TABLE source_maps ADD COLUMN file_size_bytes INTEGER DEFAULT 0"))
+
 async def init_db():
-    """Create tables on startup if they don't already exist."""
+    """Create tables on startup if they don't already exist and apply safe migrations."""
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    logger.info("Database tables initialized successfully.")
+        await conn.run_sync(_run_migrations)
+    logger.info("Database tables and migrations initialized successfully.")

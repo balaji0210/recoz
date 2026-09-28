@@ -180,7 +180,10 @@ class SourceMap(Base):
     application_id = Column(String(36), ForeignKey("applications.id", ondelete="CASCADE"), index=True, nullable=False)
     release_version = Column(String(64), index=True, nullable=False)
     filename = Column(String(255), nullable=False)
-    map_content = Column(Text, nullable=False)
+    map_content = Column(Text, nullable=True)
+    storage_backend = Column(String(32), default="local")
+    storage_path = Column(Text, nullable=True)
+    file_size_bytes = Column(Integer, default=0)
     created_at = Column(DateTime, default=utc_now)
 
 # ----------------- Distributed Trace Models -----------------

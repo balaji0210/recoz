@@ -162,3 +162,65 @@ export interface IncidentItem {
   acknowledged_at?: string;
   resolved_at?: string;
 }
+
+export interface NotificationChannelItem {
+  id: string;
+  team_id: string;
+  name: string;
+  channel_type: 'email' | 'webhook' | 'sms' | 'pagerduty' | 'jira' | 'servicenow' | 'slack' | 'discord' | string;
+  config_json: Record<string, any>;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface TimeseriesBucket {
+  timestamp: string;
+  end_timestamp: string;
+  label: string;
+  page_views: number;
+  rum_avg_duration_ms: number;
+  rum_p95_duration_ms: number;
+  web_vitals: {
+    avg_lcp: number | null;
+    avg_inp: number | null;
+    avg_cls: number | null;
+    avg_ttfb: number | null;
+  };
+  spans_count: number;
+  spans_avg_latency_ms: number;
+  spans_p95_latency_ms: number;
+  spans_error_count: number;
+  spans_error_rate_percent: number;
+  error_events_count: number;
+  synthetics_uptime_percent: number;
+  synthetics_avg_ms: number;
+}
+
+export interface TimeseriesRollupResponse {
+  app_id: string | null;
+  time_range: string;
+  interval_seconds: number;
+  total_buckets: number;
+  buckets: TimeseriesBucket[];
+}
+
+export interface SchedulerJobInfo {
+  job_id: string;
+  name: string;
+  interval_seconds: number;
+  status: 'IDLE' | 'RUNNING' | 'OK' | 'ERROR';
+  run_count: number;
+  error_count: number;
+  last_run: string | null;
+  next_run: string | null;
+  last_duration_ms: number;
+  last_error: string | null;
+}
+
+export interface SchedulerStatus {
+  is_running: boolean;
+  engine: string;
+  has_apscheduler: boolean;
+  uptime_seconds: number;
+  jobs: SchedulerJobInfo[];
+}

@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
@@ -41,6 +41,15 @@ class Settings(BaseSettings):
     # Data Retention (Days)
     RAW_DATA_RETENTION_DAYS: int = 30
     ROLLUP_RETENTION_DAYS: int = 90
+    
+    # Storage Backend Configuration (for Source Maps and Artifacts)
+    STORAGE_BACKEND: str = os.getenv("STORAGE_BACKEND", "local")  # "local" or "s3"
+    STORAGE_LOCAL_DIR: str = os.getenv("STORAGE_LOCAL_DIR", "./storage/sourcemaps")
+    S3_BUCKET: str = os.getenv("S3_BUCKET", "ricoz-sourcemaps")
+    S3_ENDPOINT_URL: Optional[str] = os.getenv("S3_ENDPOINT_URL", None)
+    S3_ACCESS_KEY: Optional[str] = os.getenv("S3_ACCESS_KEY", None)
+    S3_SECRET_KEY: Optional[str] = os.getenv("S3_SECRET_KEY", None)
+    S3_REGION: str = os.getenv("S3_REGION", "us-east-1")
     
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env", extra="ignore")
 

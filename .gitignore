@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build and distribution
+dist/
+build/
+out/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.cache/
+
+# Databases & local storage
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+storage/sourcemaps/*
+!storage/sourcemaps/.gitkeep
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

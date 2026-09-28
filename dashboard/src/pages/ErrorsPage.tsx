@@ -12,6 +12,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
   const [statusFilter, setStatusFilter] = useState<string>('unhandled');
   const [selectedGroup, setSelectedGroup] = useState<ErrorGroupItem | null>(null);
   const [groupDetail, setGroupDetail] = useState<any | null>(null);
+  const [actionToast, setActionToast] = useState<string | null>(null);
 
   useEffect(() => {
     loadErrors();
@@ -87,11 +88,30 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
 
   const handleUpdateStatus = async (status: string) => {
     if (!selectedGroup) return;
+    const targetId = selectedGroup.id;
+    const newStatus = status as 'unhandled' | 'resolved' | 'ignored';
+
+    // 1. Instant optimistic update
+    setSelectedGroup(prev => prev ? { ...prev, status: newStatus } : null);
+    setErrorGroups(prev =>
+      prev.map(g => g.id === targetId ? { ...g, status: newStatus } : g)
+    );
+    setActionToast(`✓ Error group marked as ${status.toUpperCase()}`);
+
+    // 2. Call backend API
     try {
-      await api.updateErrorGroupStatus(selectedGroup.id, status);
-      loadErrors();
+      await api.updateErrorGroupStatus(targetId, status);
+      const data = await api.getErrorGroups(appId, statusFilter || undefined);
+      setErrorGroups(data);
+      const matched = data.find(g => g.id === targetId);
+      if (matched) {
+        setSelectedGroup(matched);
+      } else if (data.length > 0 && statusFilter) {
+        // If the item moved out of the active status filter, auto-select next available item
+        handleSelectGroup(data[0]);
+      }
     } catch (e) {
-      console.error(e);
+      console.warn("Backend error updating status:", e);
     }
   };
 
@@ -181,31 +201,91 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
         {/* Selected Group Detail & Stack Trace */}
         {selectedGroup && (
           <div className="glass-panel" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Action Feedback Banner */}
+            {actionToast && (
+              <div style={{
+                background: '#ecfdf5',
+                border: '1px solid #a7f3d0',
+                borderRadius: 8,
+                padding: '10px 14px',
+                color: '#047857',
+                fontSize: 13,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <CheckCircle2 size={16} /> {actionToast}
+                </div>
+                <button
+                  onClick={() => setActionToast(null)}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#047857', fontSize: 12, fontWeight: 700 }}
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+
             {/* Action Bar */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: 16 }}>
               <div>
-                <span className="badge badge-danger" style={{ marginBottom: 6 }}>
-                  {selectedGroup.error_type}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <span className="badge badge-danger">
+                    {selectedGroup.error_type}
+                  </span>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    background: selectedGroup.status === 'resolved' ? '#ecfdf5' : (selectedGroup.status === 'ignored' ? '#f1f5f9' : '#fff1f2'),
+                    color: selectedGroup.status === 'resolved' ? '#059669' : (selectedGroup.status === 'ignored' ? '#64748b' : '#e11d48'),
+                    border: `1px solid ${selectedGroup.status === 'resolved' ? '#a7f3d0' : (selectedGroup.status === 'ignored' ? '#cbd5e1' : '#fecdd3')}`
+                  }}>
+                    [{selectedGroup.status}]
+                  </span>
+                </div>
                 <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
                   {selectedGroup.message}
                 </h2>
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  onClick={() => handleUpdateStatus('resolved')}
-                  className="btn-primary"
-                  style={{ background: '#059669', fontSize: 12 }}
-                >
-                  <CheckCircle2 size={14} /> Resolve
-                </button>
-                <button
-                  onClick={() => handleUpdateStatus('ignored')}
-                  className="btn-secondary"
-                  style={{ fontSize: 12 }}
-                >
-                  <EyeOff size={14} /> Ignore
-                </button>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                {selectedGroup.status !== 'resolved' ? (
+                  <button
+                    onClick={() => handleUpdateStatus('resolved')}
+                    className="btn-primary"
+                    style={{ background: '#059669', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <CheckCircle2 size={14} /> Resolve
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleUpdateStatus('unhandled')}
+                    className="btn-secondary"
+                    style={{ fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <AlertOctagon size={14} /> Reopen (Unhandled)
+                  </button>
+                )}
+                {selectedGroup.status !== 'ignored' ? (
+                  <button
+                    onClick={() => handleUpdateStatus('ignored')}
+                    className="btn-secondary"
+                    style={{ fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <EyeOff size={14} /> Ignore
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleUpdateStatus('unhandled')}
+                    className="btn-secondary"
+                    style={{ fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <AlertOctagon size={14} /> Unignore
+                  </button>
+                )}
               </div>
             </div>
 

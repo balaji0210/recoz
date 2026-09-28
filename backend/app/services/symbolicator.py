@@ -175,3 +175,36 @@ def parse_stack_frames(raw_stack: str) -> List[Dict[str, Any]]:
                 "raw": line.strip()
             })
     return frames
+
+_symbolicator_cache: Dict[str, SourceMapSymbolicator] = {}
+
+async def load_symbolicator_for_record(sm: Any) -> Optional[SourceMapSymbolicator]:
+    """
+    Loads and caches a SourceMapSymbolicator instance from DB content or StorageBackend.
+    """
+    cache_key = f"{sm.id}:{sm.release_version}:{sm.filename}"
+    if cache_key in _symbolicator_cache:
+        return _symbolicator_cache[cache_key]
+
+    raw_content = sm.map_content
+    if not raw_content and getattr(sm, "storage_path", None):
+        from app.services.storage import get_storage_backend
+        storage = get_storage_backend()
+        try:
+            raw_bytes = await storage.load(sm.storage_path)
+            raw_content = raw_bytes.decode('utf-8', errors='replace')
+        except Exception:
+            return None
+
+    if not raw_content:
+        return None
+
+    try:
+        symb = SourceMapSymbolicator(raw_content)
+        # Keep cache capped at 50 symbolicators
+        if len(_symbolicator_cache) >= 50:
+            _symbolicator_cache.pop(next(iter(_symbolicator_cache)))
+        _symbolicator_cache[cache_key] = symb
+        return symb
+    except Exception:
+        return None

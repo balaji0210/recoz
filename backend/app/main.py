@@ -29,13 +29,15 @@ async def lifespan(app: FastAPI):
     
     # Auto-seed default admin and demo app if empty
     from app.core.database import AsyncSessionLocal
-    from app.models import User, Team, Membership, Application, AlertRule, SyntheticCheck, NotificationChannel
+    from app.models import User, Team, Membership, Application, AlertRule, SyntheticCheck, NotificationChannel, Incident, ErrorGroup
     from app.core.security import hash_password, generate_ingest_key
     from sqlalchemy import select
+    from datetime import datetime, timezone, timedelta
     
     async with AsyncSessionLocal() as db:
         res = await db.execute(select(User).where(User.email == "admin@ricozappmon.io"))
-        if not res.scalar_one_or_none():
+        user = res.scalar_one_or_none()
+        if not user:
             logger.info("Seeding default admin user, demo team, and sample applications...")
             user = User(
                 email="admin@ricozappmon.io",
@@ -46,14 +48,22 @@ async def lifespan(app: FastAPI):
             db.add(user)
             await db.flush()
 
+        res_team = await db.execute(select(Team).where(Team.slug == "engineering-core"))
+        team = res_team.scalar_one_or_none()
+        if not team:
             team = Team(name="Engineering Core", slug="engineering-core")
             db.add(team)
             await db.flush()
 
+        res_mem = await db.execute(select(Membership).where(Membership.user_id == user.id, Membership.team_id == team.id))
+        if not res_mem.scalar_one_or_none():
             membership = Membership(user_id=user.id, team_id=team.id, role="admin")
             db.add(membership)
 
-            # Ingest keys
+        # Ingest keys & Application
+        res_app = await db.execute(select(Application).where(Application.id == "demo-ecommerce-app-id"))
+        demo_app = res_app.scalar_one_or_none()
+        if not demo_app:
             raw_key, hashed_key = generate_ingest_key()
             demo_app = Application(
                 id="demo-ecommerce-app-id",
@@ -68,8 +78,11 @@ async def lifespan(app: FastAPI):
             )
             db.add(demo_app)
             await db.flush()
+            logger.info(f"Default App Ingest Key: {raw_key}")
 
-            # Notification channel
+        # Notification channel
+        res_ch = await db.execute(select(NotificationChannel).where(NotificationChannel.team_id == team.id))
+        if not res_ch.scalar_one_or_none():
             channel = NotificationChannel(
                 team_id=team.id,
                 name="DevOps Slack & Email Webhook",
@@ -78,7 +91,10 @@ async def lifespan(app: FastAPI):
             )
             db.add(channel)
 
-            # Default Alert Rules
+        # Default Alert Rules
+        res_rules = await db.execute(select(AlertRule).where(AlertRule.application_id == demo_app.id))
+        rules = res_rules.scalars().all()
+        if not rules:
             r1 = AlertRule(
                 application_id=demo_app.id,
                 team_id=team.id,
@@ -102,8 +118,14 @@ async def lifespan(app: FastAPI):
                 state="OK"
             )
             db.add_all([r1, r2])
+            await db.flush()
+        else:
+            r1 = rules[0]
+            r2 = rules[1] if len(rules) > 1 else rules[0]
 
-            # Default Synthetic Checks
+        # Default Synthetic Checks
+        res_syn = await db.execute(select(SyntheticCheck).where(SyntheticCheck.application_id == demo_app.id))
+        if not res_syn.scalar_one_or_none():
             s1 = SyntheticCheck(
                 application_id=demo_app.id,
                 team_id=team.id,
@@ -117,8 +139,85 @@ async def lifespan(app: FastAPI):
                 interval_seconds=60
             )
             db.add(s1)
-            await db.commit()
-            logger.info(f"Default App Ingest Key: {raw_key}")
+
+        # Default Incidents
+        res_inc = await db.execute(select(Incident).where(Incident.application_id == demo_app.id))
+        if not res_inc.scalars().first():
+            inc1 = Incident(
+                id="inc-1",
+                alert_rule_id=r1.id,
+                application_id=demo_app.id,
+                team_id=team.id,
+                dedup_key=f"{r1.id}_init",
+                title="Alert: High JS Error Rate breached (6.8% > 5.0%)",
+                severity="critical",
+                status="OPEN",
+                current_value=6.8,
+                threshold=5.0,
+                triggered_at=datetime.now(timezone.utc) - timedelta(minutes=8)
+            )
+            inc2 = Incident(
+                id="inc-2",
+                alert_rule_id=r2.id,
+                application_id=demo_app.id,
+                team_id=team.id,
+                dedup_key=f"{r2.id}_init",
+                title="Alert: Slow P95 Page Load breached (2840ms > 2500ms)",
+                severity="warning",
+                status="RESOLVED",
+                current_value=1940.0,
+                threshold=2500.0,
+                triggered_at=datetime.now(timezone.utc) - timedelta(hours=1),
+                resolved_at=datetime.now(timezone.utc) - timedelta(minutes=40)
+            )
+            db.add_all([inc1, inc2])
+
+        # Default Error Groups
+        res_eg = await db.execute(select(ErrorGroup).where(ErrorGroup.application_id == demo_app.id))
+        if not res_eg.scalars().first():
+            now_dt = datetime.now(timezone.utc)
+            eg1 = ErrorGroup(
+                id="err-1",
+                application_id=demo_app.id,
+                fingerprint="a89f21000000",
+                error_type="TypeError",
+                message_template="Cannot read properties of undefined (reading 'price')",
+                status="unhandled",
+                occurrence_count=42,
+                affected_users_count=19,
+                last_release="1.2.4",
+                first_seen=now_dt - timedelta(days=1),
+                last_seen=now_dt
+            )
+            eg2 = ErrorGroup(
+                id="err-2",
+                application_id=demo_app.id,
+                fingerprint="4d1290000000",
+                error_type="NetworkError",
+                message_template="Failed to fetch resource from CDN payment gateway",
+                status="unhandled",
+                occurrence_count=14,
+                affected_users_count=11,
+                last_release="1.2.4",
+                first_seen=now_dt - timedelta(days=1),
+                last_seen=now_dt
+            )
+            eg3 = ErrorGroup(
+                id="err-3",
+                application_id=demo_app.id,
+                fingerprint="bc4471000000",
+                error_type="ReferenceError",
+                message_template="StripeCheckoutHandler is not defined",
+                status="resolved",
+                occurrence_count=8,
+                affected_users_count=5,
+                last_release="1.2.3",
+                first_seen=now_dt - timedelta(days=2),
+                last_seen=now_dt - timedelta(days=1)
+            )
+            db.add_all([eg1, eg2, eg3])
+
+        await db.commit()
 
     # Start background scheduler
     scheduler.start()

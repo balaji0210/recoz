@@ -158,7 +158,6 @@ async def ingest_traces(
                     application_id=app.id,
                     root_service=tdata["root_service"],
                     root_name=tdata["root_name"],
-                    root_span_id=tdata["root_span_id"],
                     start_time=tdata["min_start"],
                     duration_ms=round(total_dur, 2),
                     span_count=len(tdata["spans"]),

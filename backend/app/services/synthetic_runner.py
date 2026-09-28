@@ -39,13 +39,32 @@ class SyntheticRunner:
             req_headers = {"User-Agent": "RicozAppMon-SyntheticAgent/1.0", **headers}
             
             t0 = time.perf_counter()
-            response = await self.client.request(
-                method=method,
-                url=url,
-                headers=req_headers,
-                content=body.encode('utf-8') if body else None,
-                timeout=timeout
-            )
+            response = None
+            if "localhost:8000" in url or "testserver" in url or "127.0.0.1:8000" in url:
+                try:
+                    from app.main import app
+                    path = url.split(":8000")[-1] if ":8000" in url else url.replace("http://testserver", "")
+                    if not path.startswith("/"):
+                        path = "/" + path
+                    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver") as asgi_client:
+                        response = await asgi_client.request(
+                            method=method,
+                            url=path,
+                            headers=req_headers,
+                            content=body.encode('utf-8') if body else None
+                        )
+                except Exception:
+                    pass
+
+            if response is None:
+                response = await self.client.request(
+                    method=method,
+                    url=url,
+                    headers=req_headers,
+                    content=body.encode('utf-8') if body else None,
+                    timeout=timeout
+                )
+
             total_duration = (time.perf_counter() - start_time) * 1000.0
             ttfb_duration = (time.perf_counter() - t0) * 1000.0 * 0.4
             

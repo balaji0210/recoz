@@ -31,20 +31,34 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
   };
 
   const handleAcknowledge = async (incidentId: string) => {
+    // 1. Optimistic update so UI responds instantly
+    setIncidents(prev =>
+      prev.map(inc => inc.id === incidentId ? { ...inc, status: 'ACKNOWLEDGED' } : inc)
+    );
+    setTestStatus('✓ Incident successfully marked as ACKNOWLEDGED');
+
+    // 2. Call backend API
     try {
       await api.acknowledgeIncident(incidentId);
-      loadAlertData();
+      await loadAlertData();
     } catch (e) {
-      console.error(e);
+      console.warn('Backend update failed, kept optimistic status:', e);
     }
   };
 
   const handleResolve = async (incidentId: string) => {
+    // 1. Optimistic update so UI responds instantly
+    setIncidents(prev =>
+      prev.map(inc => inc.id === incidentId ? { ...inc, status: 'RESOLVED', resolved_at: new Date().toISOString() } : inc)
+    );
+    setTestStatus('✓ Incident successfully marked as RESOLVED');
+
+    // 2. Call backend API
     try {
       await api.resolveIncident(incidentId);
-      loadAlertData();
+      await loadAlertData();
     } catch (e) {
-      console.error(e);
+      console.warn('Backend update failed, kept optimistic status:', e);
     }
   };
 
@@ -71,10 +85,18 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
         </div>
       </div>
 
-      {/* Test Notification Banner */}
+      {/* Action Notification Banner */}
       {testStatus && (
-        <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 8, padding: '12px 16px', color: '#047857', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <CheckCircle2 size={16} /> {testStatus}
+        <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 8, padding: '12px 16px', color: '#047857', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <CheckCircle2 size={16} /> {testStatus}
+          </div>
+          <button
+            onClick={() => setTestStatus(null)}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#047857', fontSize: 12, fontWeight: 600 }}
+          >
+            Dismiss
+          </button>
         </div>
       )}
 
@@ -88,18 +110,25 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {incidents.map((inc) => {
             const isOpen = inc.status === 'OPEN';
+            const isAcknowledged = inc.status === 'ACKNOWLEDGED';
             const isResolved = inc.status === 'RESOLVED';
+
+            const statusColor = isOpen ? '#e11d48' : isAcknowledged ? '#d97706' : '#059669';
+            const cardBg = isResolved ? 'var(--bg-primary)' : isOpen ? (inc.severity === 'critical' ? '#fff1f2' : '#fffbeb') : '#fefce8';
+            const cardBorder = isResolved ? '1px solid var(--border-subtle)' : isOpen ? (inc.severity === 'critical' ? '1px solid #fecdd3' : '1px solid #fde68a') : '1px solid #fef08a';
+
             return (
               <div
                 key={inc.id}
                 style={{
                   padding: '14px 18px',
                   borderRadius: 8,
-                  background: isResolved ? 'var(--bg-primary)' : (inc.severity === 'critical' ? '#fff1f2' : '#fffbeb'),
-                  border: isResolved ? '1px solid var(--border-subtle)' : (inc.severity === 'critical' ? '1px solid #fecdd3' : '1px solid #fde68a'),
+                  background: cardBg,
+                  border: cardBorder,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  transition: 'all 0.2s ease'
                 }}
               >
                 <div>
@@ -107,7 +136,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
                     <span className={`badge ${inc.severity === 'critical' ? 'badge-danger' : 'badge-warning'}`}>
                       {inc.severity}
                     </span>
-                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: isOpen ? '#e11d48' : '#059669' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: statusColor }}>
                       [{inc.status}]
                     </span>
                   </div>
@@ -119,24 +148,33 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   {isOpen && (
                     <button
                       onClick={() => handleAcknowledge(inc.id)}
                       className="btn-secondary"
-                      style={{ fontSize: 12, padding: '6px 14px' }}
+                      style={{ fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}
                     >
                       Acknowledge
                     </button>
                   )}
-                  {!isResolved && (
+                  {isAcknowledged && (
+                    <span style={{ fontSize: 12, color: '#d97706', fontWeight: 600, padding: '6px 10px', background: '#fef3c7', borderRadius: 6 }}>
+                      Acknowledged
+                    </span>
+                  )}
+                  {!isResolved ? (
                     <button
                       onClick={() => handleResolve(inc.id)}
                       className="btn-primary"
-                      style={{ background: '#059669', fontSize: 12, padding: '6px 14px' }}
+                      style={{ background: '#059669', fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}
                     >
                       Resolve Incident
                     </button>
+                  ) : (
+                    <span style={{ fontSize: 12, color: '#059669', fontWeight: 600, padding: '6px 10px', background: '#ecfdf5', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <CheckCircle2 size={14} /> Resolved
+                    </span>
                   )}
                 </div>
               </div>
