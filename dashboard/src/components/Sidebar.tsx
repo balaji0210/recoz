@@ -23,7 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   incidentCount = 1
 }) => {
   const navItems = [
-    { id: 'overview', label: 'Live Overview', icon: Activity },
+    { id: 'overview', label: 'APM Dashboard', icon: Activity },
     { id: 'rum', label: 'Real User Monitoring', icon: Globe },
     { id: 'errors', label: 'Error Diagnostics', icon: AlertOctagon },
     { id: 'traces', label: 'Traces & Waterfall', icon: GitMerge },

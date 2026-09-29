@@ -13,7 +13,7 @@ OS_LIST = ["Windows", "macOS", "Linux", "iOS", "Android"]
 DEVICES = ["Desktop", "Mobile", "Tablet"]
 ROUTES = ["/", "/products", "/products/item-492", "/cart", "/checkout", "/account/orders", "/settings"]
 
-def generate_hex(length: number):
+def generate_hex(length: int):
     return uuid.uuid4().hex[:length]
 
 async def seed_initial_traffic():

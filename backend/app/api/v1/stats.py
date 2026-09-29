@@ -100,6 +100,113 @@ async def get_dogfood_metrics(db: AsyncSession = Depends(get_db)):
         }
     }
 
+@router.post("/simulate-traffic")
+async def simulate_live_traffic(
+    app_id: Optional[str] = "demo-ecommerce-app-id",
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Dispatches simulated real-user monitoring sessions, spans, and metrics
+    to populate dashboard telemetry in real time.
+    """
+    import random
+    import uuid
+    from datetime import datetime, timezone, timedelta
+
+    # Verify target app
+    res = await db.execute(select(Application).where(Application.id == app_id))
+    app = res.scalar_one_or_none()
+    if not app:
+        res = await db.execute(select(Application).limit(1))
+        app = res.scalars().first()
+    if not app:
+        raise HTTPException(status_code=404, detail="No application found to simulate traffic for")
+
+    now = datetime.now(timezone.utc)
+    sess_id = f"sess_{uuid.uuid4().hex[:12]}"
+    new_sess = RUMSession(
+        id=sess_id,
+        application_id=app.id,
+        session_id=sess_id,
+        user_id=f"usr_{random.randint(100, 999)}",
+        browser=random.choice(["Chrome 122", "Safari 17", "Firefox 124", "Edge 122"]),
+        os=random.choice(["Windows 11", "macOS Sonoma", "iOS 17", "Android 14"]),
+        device=random.choice(["Desktop", "Desktop", "Mobile", "Tablet"]),
+        started_at=now - timedelta(minutes=random.randint(5, 30)),
+        last_active_at=now
+    )
+    db.add(new_sess)
+
+    routes = ["/", "/products", "/products/item-492", "/cart", "/checkout", "/account/orders"]
+    events_count = 0
+    for _ in range(random.randint(8, 15)):
+        route = random.choice(routes)
+        ev_time = now - timedelta(minutes=random.randint(0, 15))
+        duration = random.uniform(150.0, 950.0)
+        ev = RUMEvent(
+            id=f"ev_{uuid.uuid4().hex[:12]}",
+            application_id=app.id,
+            session_id=sess_id,
+            event_type="page_view",
+            url=f"https://shopsphere.io{route}",
+            route=route,
+            duration=duration,
+            lcp=random.uniform(800.0, 2200.0),
+            inp=random.uniform(40.0, 160.0),
+            cls=random.uniform(0.01, 0.06),
+            ttfb=random.uniform(70.0, 280.0),
+            fcp=random.uniform(250.0, 800.0),
+            created_at=ev_time
+        )
+        db.add(ev)
+        events_count += 1
+
+    # Add distributed trace spans
+    trace_id = uuid.uuid4().hex
+    root_span = Span(
+        id=f"sp_{uuid.uuid4().hex[:12]}",
+        trace_id=trace_id,
+        span_id=uuid.uuid4().hex[:16],
+        application_id=app.id,
+        service_name="frontend-web",
+        name="User Action: Page Navigation",
+        kind="client",
+        start_time=now - timedelta(seconds=2),
+        end_time=now,
+        duration_ms=210.5,
+        status_code="OK",
+        attributes_json={"http.route": "/checkout", "http.status": 200},
+        created_at=now
+    )
+    gw_span = Span(
+        id=f"sp_{uuid.uuid4().hex[:12]}",
+        trace_id=trace_id,
+        span_id=uuid.uuid4().hex[:16],
+        parent_span_id=root_span.span_id,
+        application_id=app.id,
+        service_name="node-gateway",
+        name="POST /api/checkout",
+        kind="server",
+        start_time=now - timedelta(seconds=1, milliseconds=800),
+        end_time=now,
+        duration_ms=180.2,
+        status_code="OK",
+        attributes_json={"http.route": "/api/checkout", "http.status": 200},
+        created_at=now
+    )
+    db.add_all([root_span, gw_span])
+
+    await db.commit()
+
+    return {
+        "status": "success",
+        "app_id": app.id,
+        "session_id": sess_id,
+        "events_created": events_count,
+        "spans_created": 2,
+        "message": f"Generated {events_count} telemetry events and distributed trace {trace_id[:8]}..."
+    }
+
 @router.get("/timeseries")
 async def get_timeseries_rollups(
     app_id: Optional[str] = None,
