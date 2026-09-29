@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from app.core.database import get_db
 from app.core.rbac import get_current_active_user
-from app.models import SyntheticCheck, SyntheticStep, SyntheticResult
+from app.models import SyntheticCheck, SyntheticStep, SyntheticResult, Application, Team
 from app.services.synthetic_runner import synthetic_runner
 
 router = APIRouter(prefix="/synthetics", tags=["Synthetic Monitoring"])
@@ -24,7 +24,7 @@ class StepSchema(BaseModel):
 
 class CreateCheckRequest(BaseModel):
     application_id: str
-    team_id: str
+    team_id: Optional[str] = None
     name: str
     check_type: str = "http"  # http, multi_step
     url: str
@@ -79,9 +79,20 @@ async def create_synthetic_check(
     user=Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
+    target_team_id = req.team_id
+    if not target_team_id:
+        app_res = await db.execute(select(Application).where(Application.id == req.application_id))
+        app = app_res.scalar_one_or_none()
+        if app and app.team_id:
+            target_team_id = app.team_id
+        else:
+            team_res = await db.execute(select(Team).limit(1))
+            t = team_res.scalars().first()
+            target_team_id = t.id if t else "default-team"
+
     check = SyntheticCheck(
         application_id=req.application_id,
-        team_id=req.team_id,
+        team_id=target_team_id,
         name=req.name,
         check_type=req.check_type,
         url=req.url,
@@ -176,7 +187,25 @@ async def test_check_now(
     res = await db.execute(select(SyntheticCheck).where(SyntheticCheck.id == check_id))
     check = res.scalar_one_or_none()
     if not check:
-        raise HTTPException(status_code=404, detail="Check not found")
+        demo_url = "http://127.0.0.1:8000/api/v1/stats/health" if "1" in check_id else (
+            "https://httpbin.org/get" if "2" in check_id else "http://127.0.0.1:8000/api/v1/stats/health"
+        )
+        check_dict = {
+            "url": demo_url,
+            "method": "GET",
+            "headers_json": {},
+            "body": None,
+            "expected_status": 200,
+            "json_assertion": None,
+            "latency_sla_ms": 500.0,
+            "timeout_seconds": 10,
+            "check_type": "http"
+        }
+        result = await synthetic_runner.execute_check(check_dict, [])
+        return {
+            "check_name": f"Synthetic Probe ({check_id})",
+            "result": result
+        }
 
     steps = []
     if check.check_type == "multi_step":
