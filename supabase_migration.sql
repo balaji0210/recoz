@@ -1,6 +1,6 @@
 -- ==========================================================================
 -- RICOZ APM - SUPABASE POSTGRESQL MIGRATION
--- Generated at: 2026-09-30T09:52:11.501010Z
+-- Generated at: 2026-09-30T11:45:45.956262Z
 -- Project Ref: fdxkpojbxmacjjlkillk
 -- ==========================================================================
 
@@ -299,7 +299,7 @@ CREATE INDEX IF NOT EXISTS idx_synthetic_results_check ON synthetic_results(synt
 
 -- Data for table: users (1 rows)
 INSERT INTO users ("id", "email", "name", "hashed_password", "is_active", "is_superuser", "created_at", "updated_at") VALUES
-  ('3737abce-29fa-44d8-ad70-082efbdf028f', 'admin@ricozappmon.io', 'Admin User', '214ee58e4f55a591c3588215a8e54e81$bf8c355a7dd3f46fddf65a3b0a7dfcd6af9da4775449cbe8017c288fd01e8496', 1, 1, '2026-09-21 10:49:07.775895', '2026-09-21 10:49:07.775899')
+  ('3737abce-29fa-44d8-ad70-082efbdf028f', 'admin@ricozappmon.io', 'Admin User', '214ee58e4f55a591c3588215a8e54e81$bf8c355a7dd3f46fddf65a3b0a7dfcd6af9da4775449cbe8017c288fd01e8496', TRUE, TRUE, '2026-09-21 10:49:07.775895', '2026-09-21 10:49:07.775899')
 ON CONFLICT DO NOTHING;
 
 -- Data for table: teams (1 rows)
@@ -314,12 +314,12 @@ ON CONFLICT DO NOTHING;
 
 -- Data for table: notification_channels (1 rows)
 INSERT INTO notification_channels ("id", "team_id", "name", "channel_type", "config_json", "is_active", "created_at") VALUES
-  ('526be059-8e39-44dd-85c5-ad76a1ed4f72', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'DevOps Slack & Email Webhook', 'webhook', '{"webhook_url": "http://localhost:8000/api/v1/stats/health"}'::jsonb, 1, '2026-09-21 10:49:07.793329')
+  ('526be059-8e39-44dd-85c5-ad76a1ed4f72', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'DevOps Slack & Email Webhook', 'webhook', '{"webhook_url": "http://localhost:8000/api/v1/stats/health"}'::jsonb, TRUE, '2026-09-21 10:49:07.793329')
 ON CONFLICT DO NOTHING;
 
 -- Data for table: applications (1 rows)
 INSERT INTO applications ("id", "team_id", "name", "slug", "tier", "environment", "ingest_key_hash", "ingest_key_prefix", "allowed_origins", "is_active", "created_at", "updated_at") VALUES
-  ('demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'ShopSphere E-Commerce Web', 'shopsphere-web', 'agent', 'production', 'c4e1059b575201c3d06a81a53d92dc765fbedfe4337b9bfde6e97fd21a874a8c', 'rz_live_lFe7...', '["*"]'::jsonb, 1, '2026-09-21 10:49:07.784524', '2026-09-21 10:49:07.784528')
+  ('demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'ShopSphere E-Commerce Web', 'shopsphere-web', 'agent', 'production', 'c4e1059b575201c3d06a81a53d92dc765fbedfe4337b9bfde6e97fd21a874a8c', 'rz_live_lFe7...', '["*"]'::jsonb, TRUE, '2026-09-21 10:49:07.784524', '2026-09-21 10:49:07.784528')
 ON CONFLICT DO NOTHING;
 
 -- Data for table: rum_sessions (4 rows)
@@ -405,8 +405,8 @@ ON CONFLICT DO NOTHING;
 
 -- Data for table: alert_rules (2 rows)
 INSERT INTO alert_rules ("id", "application_id", "team_id", "name", "metric_type", "operator", "threshold", "duration_seconds", "severity", "state", "pending_since", "is_active", "created_at") VALUES
-  ('50c3ab5f-8d89-4465-a174-6a1a90d1086e', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'High JS Error Rate (> 5%)', 'error_rate', 'gt', 5.0, 60, 'critical', 'OK', NULL, 1, '2026-09-21 10:49:07.790293'),
-  ('31af9b9f-37de-4f95-8975-ee35c1573714', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'Slow P95 Page Load (> 2500ms)', 'p95_latency', 'gt', 2500.0, 120, 'warning', 'OK', NULL, 1, '2026-09-21 10:49:07.790301')
+  ('50c3ab5f-8d89-4465-a174-6a1a90d1086e', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'High JS Error Rate (> 5%)', 'error_rate', 'gt', 5.0, 60, 'critical', 'OK', NULL, TRUE, '2026-09-21 10:49:07.790293'),
+  ('31af9b9f-37de-4f95-8975-ee35c1573714', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'Slow P95 Page Load (> 2500ms)', 'p95_latency', 'gt', 2500.0, 120, 'warning', 'OK', NULL, TRUE, '2026-09-21 10:49:07.790301')
 ON CONFLICT DO NOTHING;
 
 -- Data for table: incidents (2 rows)
@@ -417,13 +417,13 @@ ON CONFLICT DO NOTHING;
 
 -- Data for table: synthetic_checks (2 rows)
 INSERT INTO synthetic_checks ("id", "application_id", "team_id", "name", "check_type", "url", "method", "headers_json", "body", "expected_status", "json_assertion", "latency_sla_ms", "interval_seconds", "timeout_seconds", "retry_count", "status", "uptime_percent", "last_run_at", "is_active", "created_at") VALUES
-  ('7002ab09-d6f4-4182-929f-6fc0564d0cad', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'Checkout API Gateway Health', 'http', 'http://localhost:8000/api/v1/stats/health', 'GET', '{}'::jsonb, NULL, 200, 'status=healthy', 500.0, 60, 15, 2, 'HEALTHY', 100.0, '2026-09-30 09:16:39.757040', 1, '2026-09-21 10:49:07.796084'),
-  ('0e8d6ef1-aaf6-4b3f-94aa-791b9e74da0b', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'Auth Verification Probe API', 'http', 'http://localhost:8000/api/v1/stats/health', 'GET', '{}'::jsonb, NULL, 200, NULL, 500.0, 60, 15, 2, 'HEALTHY', 100.0, '2026-09-30 09:16:39.757040', 1, '2026-09-29 17:22:12.181664')
+  ('7002ab09-d6f4-4182-929f-6fc0564d0cad', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'Checkout API Gateway Health', 'http', 'http://localhost:8000/api/v1/stats/health', 'GET', '{}'::jsonb, NULL, 200, 'status=healthy', 500.0, 60, 15, 2, 'HEALTHY', 100.0, '2026-09-30 09:54:53.119263', TRUE, '2026-09-21 10:49:07.796084'),
+  ('0e8d6ef1-aaf6-4b3f-94aa-791b9e74da0b', 'demo-ecommerce-app-id', '495dcdcb-f33a-4077-8fcf-aee3b4686b14', 'Auth Verification Probe API', 'http', 'http://localhost:8000/api/v1/stats/health', 'GET', '{}'::jsonb, NULL, 200, NULL, 500.0, 60, 15, 2, 'HEALTHY', 100.0, '2026-09-30 09:54:53.119263', TRUE, '2026-09-29 17:22:12.181664')
 ON CONFLICT DO NOTHING;
 
 -- Data for table: synthetic_steps (0 rows)
 
--- Data for table: synthetic_results (536 rows)
+-- Data for table: synthetic_results (538 rows)
 INSERT INTO synthetic_results ("id", "check_id", "status", "status_code", "total_duration_ms", "dns_duration_ms", "tcp_duration_ms", "tls_duration_ms", "ttfb_duration_ms", "failure_reason", "response_snippet", "created_at") VALUES
   ('87082936-1038-40be-b93c-53319f79debc', '7002ab09-d6f4-4182-929f-6fc0564d0cad', 'SUCCESS', 200, 404.84, 5.0, 12.0, 18.0, 161.94, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":1.2}', '2026-09-21 10:49:07.801397'),
   ('2c93319c-4845-49d3-b554-054136c3634b', '7002ab09-d6f4-4182-929f-6fc0564d0cad', 'SUCCESS', 200, 358.13, 5.0, 12.0, 18.0, 143.25, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":61.6}', '2026-09-21 10:50:08.287103'),
@@ -980,7 +980,9 @@ INSERT INTO synthetic_results ("id", "check_id", "status", "status_code", "total
   ('9352389c-297a-4e16-b85c-00b4b20afae6', '7002ab09-d6f4-4182-929f-6fc0564d0cad', 'SUCCESS', 200, 14.83, 5.0, 12.0, 18.0, 5.93, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":2280.2}', '2026-09-30 09:15:09.765283'),
   ('a9978fab-529a-4af9-914d-0e5adb34883f', '0e8d6ef1-aaf6-4b3f-94aa-791b9e74da0b', 'SUCCESS', 200, 4.95, 5.0, 12.0, 18.0, 1.98, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":2280.2}', '2026-09-30 09:15:09.765283'),
   ('45685b26-e597-4531-b1f9-cf8c894a05d3', '7002ab09-d6f4-4182-929f-6fc0564d0cad', 'SUCCESS', 200, 3.46, 5.0, 12.0, 18.0, 1.38, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":2370.2}', '2026-09-30 09:16:39.757040'),
-  ('ab7383c0-107b-4ca5-b11e-c7a819c21706', '0e8d6ef1-aaf6-4b3f-94aa-791b9e74da0b', 'SUCCESS', 200, 3.82, 5.0, 12.0, 18.0, 1.53, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":2370.2}', '2026-09-30 09:16:39.757040')
+  ('ab7383c0-107b-4ca5-b11e-c7a819c21706', '0e8d6ef1-aaf6-4b3f-94aa-791b9e74da0b', 'SUCCESS', 200, 3.82, 5.0, 12.0, 18.0, 1.53, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":2370.2}', '2026-09-30 09:16:39.757040'),
+  ('60a36bb2-cddc-44ff-bb71-1e7c50884cad', '7002ab09-d6f4-4182-929f-6fc0564d0cad', 'SUCCESS', 200, 138.29, 5.0, 12.0, 18.0, 55.31, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":30.4}', '2026-09-30 09:54:53.119263'),
+  ('405f1d56-b108-41bf-9ee7-303177a3eaed', '0e8d6ef1-aaf6-4b3f-94aa-791b9e74da0b', 'SUCCESS', 200, 3.64, 5.0, 12.0, 18.0, 1.45, NULL, '{"status":"healthy","service":"RicozAppMon Core Backend","uptime_seconds":30.4}', '2026-09-30 09:54:53.119263')
 ON CONFLICT DO NOTHING;
 
 -- Data for table: notification_logs (0 rows)

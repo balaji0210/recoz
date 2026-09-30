@@ -26,20 +26,45 @@ TABLE_ORDER = [
     "notification_logs"
 ]
 
-def format_pg_value(val, col_type=""):
+BOOLEAN_COLUMNS = {
+    "is_active", "is_superuser", "is_bounce", "has_errors"
+}
+
+JSON_COLUMNS = {
+    "config_json", "allowed_origins", "user_metadata", "custom_data",
+    "symbolicated_stack_trace", "breadcrumbs", "device_context",
+    "attributes_json", "events_json", "headers_json", "assertion_results", "payload_json"
+}
+
+def format_pg_value(val, col_name="", col_type=""):
     if val is None:
         return "NULL"
+
+    # Handle booleans (SQLite stores them as 1/0 integers)
+    if col_name in BOOLEAN_COLUMNS or col_name.startswith("is_") or col_name.startswith("has_") or col_type == "BOOLEAN":
+        return "TRUE" if bool(val) else "FALSE"
+
+    # Handle JSON / JSONB
+    if col_name in JSON_COLUMNS or col_name.endswith("_json") or col_type in ("JSON", "JSONB") or isinstance(val, (dict, list)):
+        if isinstance(val, str):
+            try:
+                parsed = json.loads(val)
+                serialized = json.dumps(parsed)
+            except Exception:
+                serialized = val
+        else:
+            serialized = json.dumps(val)
+        escaped = serialized.replace("'", "''")
+        return f"'{escaped}'::jsonb"
+
     if isinstance(val, bool):
         return "TRUE" if val else "FALSE"
     if isinstance(val, (int, float)):
         return str(val)
     if isinstance(val, str):
-        # Escape single quotes
         escaped = val.replace("'", "''")
         return f"'{escaped}'"
-    if isinstance(val, (dict, list)):
-        escaped = json.dumps(val).replace("'", "''")
-        return f"'{escaped}'::jsonb"
+
     escaped = str(val).replace("'", "''")
     return f"'{escaped}'"
 
@@ -387,7 +412,7 @@ CREATE TABLE IF NOT EXISTS notification_logs (
                             val = json.loads(val)
                         except Exception:
                             pass
-                    row_vals.append(format_pg_value(val, col_t))
+                    row_vals.append(format_pg_value(val, col_name=col, col_type=col_t))
                 values_clauses.append(f"({', '.join(row_vals)})")
 
             insert_stmt = f"INSERT INTO {table} ({cols_str}) VALUES\n  " + ",\n  ".join(values_clauses) + "\nON CONFLICT DO NOTHING;"
