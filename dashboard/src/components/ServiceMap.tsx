@@ -75,17 +75,22 @@ export const ServiceMap: React.FC<ServiceMapProps> = ({ data }) => {
             </div>
 
             {/* Connecting Edge Arrow */}
-            {idx < data.nodes.length - 1 && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
-                  {data.edges[idx]?.avg_latency_ms || 24}ms
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center', color: '#4f46e5' }}>
-                  <div style={{ width: 36, height: 2, background: 'linear-gradient(90deg, #4f46e5, #0891b2)' }} />
-                  <ArrowRight size={14} color="#0891b2" style={{ marginLeft: -4 }} />
+            {idx < data.nodes.length - 1 && (() => {
+              const nextNode = data.nodes[idx + 1];
+              const edge = data.edges?.find(e => e.source === node.id && e.target === nextNode?.id) || data.edges?.[idx];
+              const edgeLatency = edge?.avg_latency_ms || 24.5;
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                    {edgeLatency}ms
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', color: '#4f46e5' }}>
+                    <div style={{ width: 36, height: 2, background: 'linear-gradient(90deg, #4f46e5, #0891b2)' }} />
+                    <ArrowRight size={14} color="#0891b2" style={{ marginLeft: -4 }} />
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </React.Fragment>
         ))}
       </div>

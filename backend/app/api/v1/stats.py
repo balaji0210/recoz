@@ -189,12 +189,44 @@ async def simulate_live_traffic(
         kind="server",
         start_time=now - timedelta(seconds=1, milliseconds=800),
         end_time=now,
-        duration_ms=180.2,
+        duration_ms=48.2,
         status_code="OK",
         attributes_json={"http.route": "/api/checkout", "http.status": 200},
         created_at=now
     )
-    db.add_all([root_span, gw_span])
+    auth_span = Span(
+        id=f"sp_{uuid.uuid4().hex[:12]}",
+        trace_id=trace_id,
+        span_id=uuid.uuid4().hex[:16],
+        parent_span_id=gw_span.span_id,
+        application_id=app.id,
+        service_name="python-auth",
+        name="POST /v1/auth/verify",
+        kind="server",
+        start_time=now - timedelta(seconds=1, milliseconds=400),
+        end_time=now,
+        duration_ms=32.4,
+        status_code="OK",
+        attributes_json={"http.route": "/v1/auth/verify", "http.status": 200},
+        created_at=now
+    )
+    db_span = Span(
+        id=f"sp_{uuid.uuid4().hex[:12]}",
+        trace_id=trace_id,
+        span_id=uuid.uuid4().hex[:16],
+        parent_span_id=auth_span.span_id,
+        application_id=app.id,
+        service_name="postgres-db",
+        name="SELECT users, orders",
+        kind="database",
+        start_time=now - timedelta(seconds=1),
+        end_time=now,
+        duration_ms=12.8,
+        status_code="OK",
+        attributes_json={"db.system": "postgresql", "db.statement": "SELECT * FROM users"},
+        created_at=now
+    )
+    db.add_all([root_span, gw_span, auth_span, db_span])
 
     await db.commit()
 
@@ -203,8 +235,8 @@ async def simulate_live_traffic(
         "app_id": app.id,
         "session_id": sess_id,
         "events_created": events_count,
-        "spans_created": 2,
-        "message": f"Generated {events_count} telemetry events and distributed trace {trace_id[:8]}..."
+        "spans_created": 4,
+        "message": f"Generated {events_count} telemetry events and distributed trace {trace_id[:8]} across 4 microservices"
     }
 
 @router.get("/timeseries")
