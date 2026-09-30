@@ -82,7 +82,7 @@ async def lifespan(app: FastAPI):
 
         # Notification channel
         res_ch = await db.execute(select(NotificationChannel).where(NotificationChannel.team_id == team.id))
-        if not res_ch.scalar_one_or_none():
+        if not res_ch.scalars().first():
             channel = NotificationChannel(
                 team_id=team.id,
                 name="DevOps Slack & Email Webhook",
@@ -125,7 +125,7 @@ async def lifespan(app: FastAPI):
 
         # Default Synthetic Checks
         res_syn = await db.execute(select(SyntheticCheck).where(SyntheticCheck.application_id == demo_app.id))
-        if not res_syn.scalar_one_or_none():
+        if not res_syn.scalars().first():
             s1 = SyntheticCheck(
                 application_id=demo_app.id,
                 team_id=team.id,

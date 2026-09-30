@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Activity, Globe, AlertOctagon, GitMerge, Cpu, Bell, Settings,
-  Shield, CheckCircle2
+  Shield, CheckCircle2, Sparkles
 } from 'lucide-react';
 import { Application } from '../types';
 
@@ -23,6 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   incidentCount = 1
 }) => {
   const navItems = [
+    { id: 'landing', label: 'Product Landing', icon: Sparkles },
     { id: 'overview', label: 'APM Dashboard', icon: Activity },
     { id: 'rum', label: 'Real User Monitoring', icon: Globe },
     { id: 'errors', label: 'Error Diagnostics', icon: AlertOctagon },
@@ -47,7 +48,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       boxShadow: '1px 0 3px rgba(0, 0, 0, 0.02)'
     }}>
       {/* Brand Logo */}
-      <div style={{ padding: '20px 20px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--border-subtle)' }}>
+      <div 
+        onClick={() => setCurrentTab('landing')}
+        title="View Product Landing Page"
+        style={{ padding: '20px 20px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--border-subtle)', cursor: 'pointer' }}
+      >
         <div style={{
           width: 38,
           height: 38,

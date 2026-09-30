@@ -8,6 +8,7 @@ import { TracesPage } from './pages/TracesPage';
 import { SyntheticsPage } from './pages/SyntheticsPage';
 import { AlertsPage } from './pages/AlertsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { LandingPage } from './pages/LandingPage';
 import { api } from './api/client';
 import { Application } from './types';
 
@@ -59,6 +60,17 @@ export const App: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // If user navigated to Landing Page, render full screen experience
+  if (currentTab === 'landing') {
+    return (
+      <LandingPage
+        onLaunchApp={() => setCurrentTab('overview')}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
+    );
+  }
+
   const renderCurrentPage = () => {
     switch (currentTab) {
       case 'overview':
@@ -99,6 +111,7 @@ export const App: React.FC = () => {
           onTriggerTraffic={handleSimulateTraffic}
           theme={theme}
           toggleTheme={toggleTheme}
+          onGoLanding={() => setCurrentTab('landing')}
         />
 
         {/* Global Toast Notification */}

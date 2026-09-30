@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Search, Zap, Sun, Moon, ShieldCheck, User } from 'lucide-react';
+import { Clock, Search, Zap, Sun, Moon, ShieldCheck, User, Sparkles } from 'lucide-react';
 
 interface HeaderProps {
   timeRange: string;
@@ -7,6 +7,7 @@ interface HeaderProps {
   onTriggerTraffic?: () => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  onGoLanding?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -14,7 +15,8 @@ export const Header: React.FC<HeaderProps> = ({
   setTimeRange,
   onTriggerTraffic,
   theme,
-  toggleTheme
+  toggleTheme,
+  onGoLanding
 }) => {
   return (
     <header className="glass-header" style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 28px', position: 'sticky', top: 0, zIndex: 30 }}>
@@ -101,6 +103,19 @@ export const Header: React.FC<HeaderProps> = ({
             </>
           )}
         </button>
+
+        {/* Landing Page Link */}
+        {onGoLanding && (
+          <button
+            onClick={onGoLanding}
+            className="btn-secondary"
+            style={{ fontSize: 12, padding: '7px 12px' }}
+            title="View Product Landing Page"
+          >
+            <Sparkles size={14} color="#6366f1" />
+            <span>Landing Page</span>
+          </button>
+        )}
 
         {/* Live Traffic Simulator Button */}
         {onTriggerTraffic && (
