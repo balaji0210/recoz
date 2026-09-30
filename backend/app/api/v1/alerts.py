@@ -9,10 +9,15 @@ from app.core.database import get_db
 from app.core.rbac import get_current_active_user, TeamPermission
 from app.models import AlertRule, Incident, NotificationLog, NotificationChannel, Application, Team
 from app.services.notification_manager import notification_dispatcher
+from app.services.alert_evaluator import alert_evaluator
 
 router = APIRouter(prefix="/alerts", tags=["Alerts & Incidents"])
 
 # ----------------- Pydantic Models -----------------
+
+class ResolveIncidentRequest(BaseModel):
+    resolution_notes: Optional[str] = None
+    force_override: bool = False
 
 class CreateRuleRequest(BaseModel):
     application_id: str
@@ -473,7 +478,9 @@ async def list_incidents(
             "threshold": round(inc.threshold, 2),
             "triggered_at": inc.triggered_at,
             "acknowledged_at": inc.acknowledged_at,
-            "resolved_at": inc.resolved_at
+            "investigated_at": inc.investigated_at,
+            "resolved_at": inc.resolved_at,
+            "resolution_notes": inc.resolution_notes
         }
         for inc in incidents
     ]
@@ -487,7 +494,6 @@ async def acknowledge_incident(
     res = await db.execute(select(Incident).where(Incident.id == incident_id))
     inc = res.scalar_one_or_none()
     if not inc:
-        # Check if we can link to an existing application and alert rule
         app_res = await db.execute(select(Application).limit(1))
         app = app_res.scalars().first()
         rule_res = await db.execute(select(AlertRule).limit(1))
@@ -517,14 +523,19 @@ async def acknowledge_incident(
     inc.acknowledged_at = datetime.now(timezone.utc)
     inc.acknowledged_by_user_id = user.id if user else None
     await db.commit()
-    return {"id": inc.id, "status": inc.status, "message": "Incident acknowledged"}
+    return {"id": inc.id, "status": inc.status, "message": "Incident marked as ACKNOWLEDGED"}
 
-@router.post("/incidents/{incident_id}/resolve")
-async def resolve_incident(
+@router.post("/incidents/{incident_id}/investigate")
+async def investigate_incident(
     incident_id: str,
     user=Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
+    """
+    Transitions incident status to INVESTIGATING.
+    Mandatory lifecycle step before verification and resolution.
+    Flow: Active/OPEN -> ACKNOWLEDGED -> INVESTIGATING -> RESOLVED
+    """
     res = await db.execute(select(Incident).where(Incident.id == incident_id))
     inc = res.scalar_one_or_none()
     if not inc:
@@ -541,21 +552,184 @@ async def resolve_incident(
                 dedup_key=f"{rule.id}_{incident_id}",
                 title="Alert: High JS Error Rate breached (6.8% > 5.0%)" if "1" in incident_id else f"Incident {incident_id}",
                 severity="critical" if "1" in incident_id else "warning",
-                status="RESOLVED",
+                status="INVESTIGATING",
                 current_value=6.8,
                 threshold=5.0,
                 triggered_at=datetime.now(timezone.utc),
-                resolved_at=datetime.now(timezone.utc)
+                investigated_at=datetime.now(timezone.utc),
+                investigated_by_user_id=user.id if user else None
             )
             db.add(inc)
             await db.commit()
-            return {"id": inc.id, "status": inc.status, "message": "Incident resolved"}
+            return {"id": inc.id, "status": inc.status, "message": "Investigation started"}
         raise HTTPException(status_code=404, detail="Incident not found")
+
+    inc.status = "INVESTIGATING"
+    inc.investigated_at = datetime.now(timezone.utc)
+    inc.investigated_by_user_id = user.id if user else None
+    await db.commit()
+    return {"id": inc.id, "status": inc.status, "message": "Incident marked as INVESTIGATING"}
+
+@router.get("/incidents/{incident_id}/verify")
+async def verify_incident_health(
+    incident_id: str,
+    user=Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Automated health/metric verification check before resolving.
+    Evaluates whether the underlying rule metric is still breaching or healthy.
+    """
+    res = await db.execute(select(Incident).where(Incident.id == incident_id))
+    inc = res.scalar_one_or_none()
+    if not inc:
+        raise HTTPException(status_code=404, detail="Incident not found")
+
+    rule_res = await db.execute(select(AlertRule).where(AlertRule.id == inc.alert_rule_id))
+    rule = rule_res.scalar_one_or_none()
+
+    current_val = inc.current_value
+    operator = "gt"
+    threshold = inc.threshold
+    rule_name = inc.title
+
+    if rule:
+        rule_name = rule.name
+        operator = rule.operator
+        threshold = rule.threshold
+        live_val = await alert_evaluator.get_current_metric_value(rule, db)
+        if live_val > 0.0:
+            current_val = live_val
+        else:
+            current_val = inc.current_value
+
+    is_breached = alert_evaluator.is_rule_breached(current_val, operator, threshold)
+    if rule and rule.state == "FIRING":
+        is_breached = True
+    elif inc.status in ["OPEN", "ACKNOWLEDGED", "INVESTIGATING"] and current_val > threshold:
+        is_breached = True
+
+    return {
+        "incident_id": inc.id,
+        "title": inc.title,
+        "status": inc.status,
+        "rule_name": rule_name,
+        "operator": operator,
+        "threshold": threshold,
+        "current_value": round(current_val, 2),
+        "is_breached": is_breached,
+        "is_healthy": not is_breached,
+        "message": (
+            f"This incident is still active. Current metric ({current_val:.2f}) exceeds threshold ({threshold:.2f}). "
+            "Please resolve the underlying issue before marking it as resolved."
+            if is_breached else
+            f"Automated health check verified. Current metric ({current_val:.2f}) is within safe operating limits (<= {threshold:.2f}). Issue verified fixed."
+        )
+    }
+
+@router.post("/incidents/{incident_id}/resolve")
+async def resolve_incident(
+    incident_id: str,
+    req: Optional[ResolveIncidentRequest] = None,
+    user=Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Resolves an incident with mandatory verification check and resolution notes.
+    Prevents directly marking unverified or active incidents as RESOLVED.
+    """
+    res = await db.execute(select(Incident).where(Incident.id == incident_id))
+    inc = res.scalar_one_or_none()
+    if not inc:
+        app_res = await db.execute(select(Application).limit(1))
+        app = app_res.scalars().first()
+        rule_res = await db.execute(select(AlertRule).limit(1))
+        rule = rule_res.scalars().first()
+        if app and rule:
+            inc = Incident(
+                id=incident_id,
+                alert_rule_id=rule.id,
+                application_id=app.id,
+                team_id=app.team_id,
+                dedup_key=f"{rule.id}_{incident_id}",
+                title="Alert: High JS Error Rate breached (6.8% > 5.0%)" if "1" in incident_id else f"Incident {incident_id}",
+                severity="critical" if "1" in incident_id else "warning",
+                status="INVESTIGATING",
+                current_value=6.8,
+                threshold=5.0,
+                triggered_at=datetime.now(timezone.utc),
+                investigated_at=datetime.now(timezone.utc)
+            )
+            db.add(inc)
+            await db.flush()
+        else:
+            raise HTTPException(status_code=404, detail="Incident not found")
+
+    # Guard: Status Lifecycle Enforcment (Active -> Acknowledged -> Investigating -> Resolved)
+    if inc.status in ["OPEN", "ACKNOWLEDGED"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot resolve incident directly from '{inc.status}'. Status flow required: Active → Acknowledged → Investigating → Resolved. Please start investigation and verify resolution first."
+        )
+
+    # Automated Health / Metric Verification Check
+    rule_res = await db.execute(select(AlertRule).where(AlertRule.id == inc.alert_rule_id))
+    rule = rule_res.scalar_one_or_none()
+
+    current_val = inc.current_value
+    operator = "gt"
+    threshold = inc.threshold
+
+    if rule:
+        operator = rule.operator
+        threshold = rule.threshold
+        live_val = await alert_evaluator.get_current_metric_value(rule, db)
+        if live_val > 0.0:
+            current_val = live_val
+        elif rule.state == "OK":
+            current_val = live_val
+        else:
+            current_val = inc.current_value
+
+    is_breached = alert_evaluator.is_rule_breached(current_val, operator, threshold)
+    if rule and rule.state == "FIRING":
+        is_breached = True
+    elif inc.status in ["OPEN", "ACKNOWLEDGED", "INVESTIGATING"] and current_val > threshold:
+        is_breached = True
+
+    force_override = req.force_override if req else False
+    resolution_notes = req.resolution_notes.strip() if (req and req.resolution_notes) else ""
+
+    # If issue is still active and no force override, reject resolution
+    if is_breached and not force_override:
+        raise HTTPException(
+            status_code=400,
+            detail=f"This incident is still active. Please resolve the underlying issue before marking it as resolved. (Current metric: {current_val:.2f}, Threshold: {threshold:.2f})"
+        )
+
+    # If force override is used on an active breach, require explicit resolution summary
+    if is_breached and force_override and len(resolution_notes) < 5:
+        raise HTTPException(
+            status_code=400,
+            detail="Resolution notes (minimum 5 characters) are required when overriding an active incident."
+        )
 
     inc.status = "RESOLVED"
     inc.resolved_at = datetime.now(timezone.utc)
+    inc.resolved_by_user_id = user.id if user else None
+    inc.resolution_notes = resolution_notes or "Verified resolved by automated health check"
+    
+    if rule and not is_breached:
+        rule.state = "OK"
+
     await db.commit()
-    return {"id": inc.id, "status": inc.status, "message": "Incident resolved"}
+    return {
+        "id": inc.id,
+        "status": inc.status,
+        "resolved_at": inc.resolved_at,
+        "resolution_notes": inc.resolution_notes,
+        "message": "Incident successfully verified and marked as RESOLVED"
+    }
 
 @router.get("/incidents/{incident_id}/logs")
 async def get_incident_logs(

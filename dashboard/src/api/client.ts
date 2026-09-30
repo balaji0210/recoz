@@ -1,7 +1,7 @@
 import {
   Application, RumOverview, WebVitalsData, SlowPage,
   ErrorGroupItem, TraceWaterfallData, ServiceMapData,
-  SyntheticCheckItem, AlertRuleItem, IncidentItem,
+  SyntheticCheckItem, AlertRuleItem, IncidentItem, IncidentVerificationResult,
   TimeseriesBucket, TimeseriesRollupResponse
 } from '../types';
 
@@ -510,7 +510,10 @@ class ApiClient {
   async acknowledgeIncident(incidentId: string) {
     Object.values(this.mockIncidents).forEach(list => {
       const item = list.find(i => i.id === incidentId);
-      if (item) item.status = 'ACKNOWLEDGED';
+      if (item) {
+        item.status = 'ACKNOWLEDGED';
+        item.acknowledged_at = new Date().toISOString();
+      }
     });
     this.saveState();
     try {
@@ -520,17 +523,72 @@ class ApiClient {
     }
   }
 
-  async resolveIncident(incidentId: string) {
+  async investigateIncident(incidentId: string) {
+    Object.values(this.mockIncidents).forEach(list => {
+      const item = list.find(i => i.id === incidentId);
+      if (item) {
+        item.status = 'INVESTIGATING';
+        item.investigated_at = new Date().toISOString();
+      }
+    });
+    this.saveState();
+    try {
+      return await this.request<any>(`/alerts/incidents/${incidentId}/investigate`, { method: 'POST' });
+    } catch (e) {
+      return { id: incidentId, status: 'INVESTIGATING', message: 'Investigation started locally' };
+    }
+  }
+
+  async verifyIncident(incidentId: string): Promise<IncidentVerificationResult> {
+    try {
+      return await this.request<IncidentVerificationResult>(`/alerts/incidents/${incidentId}/verify`);
+    } catch (e) {
+      // Local fallback evaluation
+      let found: IncidentItem | undefined;
+      Object.values(this.mockIncidents).forEach(list => {
+        const item = list.find(i => i.id === incidentId);
+        if (item) found = item;
+      });
+
+      const current_value = found ? found.current_value : 0;
+      const threshold = found ? found.threshold : 5.0;
+      const is_breached = current_value > threshold;
+
+      return {
+        incident_id: incidentId,
+        title: found?.title || 'Incident Verification',
+        status: found?.status || 'INVESTIGATING',
+        rule_name: found?.title || 'Rule Threshold Probe',
+        operator: 'gt',
+        threshold,
+        current_value,
+        is_breached,
+        is_healthy: !is_breached,
+        message: is_breached
+          ? `This incident is still active. Current metric (${current_value}) exceeds threshold (${threshold}). Please resolve the underlying issue before marking it as resolved.`
+          : `Automated health check verified. Current metric (${current_value}) is within safe operating limits (<= ${threshold}). Issue verified fixed.`
+      };
+    }
+  }
+
+  async resolveIncident(incidentId: string, resolution_notes?: string, force_override: boolean = false) {
     Object.values(this.mockIncidents).forEach(list => {
       const item = list.find(i => i.id === incidentId);
       if (item) {
         item.status = 'RESOLVED';
         item.resolved_at = new Date().toISOString();
+        if (resolution_notes) item.resolution_notes = resolution_notes;
       }
     });
     this.saveState();
     try {
-      return await this.request<any>(`/alerts/incidents/${incidentId}/resolve`, { method: 'POST' });
+      return await this.request<any>(`/alerts/incidents/${incidentId}/resolve`, {
+        method: 'POST',
+        body: JSON.stringify({
+          resolution_notes,
+          force_override
+        })
+      });
     } catch (e) {
       return { id: incidentId, status: 'RESOLVED', message: 'Incident resolved locally' };
     }

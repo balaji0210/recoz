@@ -58,6 +58,17 @@ def _run_migrations(connection):
         if "file_size_bytes" not in columns:
             connection.execute(text("ALTER TABLE source_maps ADD COLUMN file_size_bytes INTEGER DEFAULT 0"))
 
+    if "incidents" in table_names:
+        inc_cols = [c["name"] for c in inspector.get_columns("incidents")]
+        if "investigated_at" not in inc_cols:
+            connection.execute(text("ALTER TABLE incidents ADD COLUMN investigated_at TIMESTAMP"))
+        if "investigated_by_user_id" not in inc_cols:
+            connection.execute(text("ALTER TABLE incidents ADD COLUMN investigated_by_user_id VARCHAR(36)"))
+        if "resolved_by_user_id" not in inc_cols:
+            connection.execute(text("ALTER TABLE incidents ADD COLUMN resolved_by_user_id VARCHAR(36)"))
+        if "resolution_notes" not in inc_cols:
+            connection.execute(text("ALTER TABLE incidents ADD COLUMN resolution_notes TEXT"))
+
 async def init_db():
     """Create tables on startup if they don't already exist and apply safe migrations."""
     async with async_engine.begin() as conn:

@@ -155,12 +155,27 @@ export interface IncidentItem {
   application_id: string;
   title: string;
   severity: 'info' | 'warning' | 'critical';
-  status: 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED';
+  status: 'OPEN' | 'ACKNOWLEDGED' | 'INVESTIGATING' | 'RESOLVED';
   current_value: number;
   threshold: number;
   triggered_at: string;
   acknowledged_at?: string;
+  investigated_at?: string;
   resolved_at?: string;
+  resolution_notes?: string;
+}
+
+export interface IncidentVerificationResult {
+  incident_id: string;
+  title: string;
+  status: string;
+  rule_name: string;
+  operator: string;
+  threshold: number;
+  current_value: number;
+  is_breached: boolean;
+  is_healthy: boolean;
+  message: string;
 }
 
 export interface NotificationChannelItem {

@@ -255,13 +255,17 @@ class Incident(Base):
     dedup_key = Column(String(128), index=True, nullable=False)
     title = Column(String(255), nullable=False)
     severity = Column(String(32), nullable=False)
-    status = Column(String(32), default="OPEN")  # OPEN, ACKNOWLEDGED, RESOLVED
+    status = Column(String(32), default="OPEN")  # OPEN, ACKNOWLEDGED, INVESTIGATING, RESOLVED
     current_value = Column(Float, nullable=False)
     threshold = Column(Float, nullable=False)
     triggered_at = Column(DateTime, default=utc_now)
     acknowledged_at = Column(DateTime, nullable=True)
+    investigated_at = Column(DateTime, nullable=True)
     resolved_at = Column(DateTime, nullable=True)
     acknowledged_by_user_id = Column(String(36), nullable=True)
+    investigated_by_user_id = Column(String(36), nullable=True)
+    resolved_by_user_id = Column(String(36), nullable=True)
+    resolution_notes = Column(Text, nullable=True)
     
     alert_rule = relationship("AlertRule", back_populates="incidents")
     notification_logs = relationship("NotificationLog", back_populates="incident", cascade="all, delete-orphan")

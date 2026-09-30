@@ -153,7 +153,6 @@ async def test_alerts_rule_patch_and_channel_crud():
 async def test_incidents_acknowledge_and_resolve():
     async with app.router.lifespan_context(app):
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver") as client:
-            # Test unauthenticated access (uses dev fallback user seamlessly)
             inc_res = await client.get("/api/v1/alerts/incidents")
             assert inc_res.status_code == 200
             incidents = inc_res.json()
@@ -161,13 +160,39 @@ async def test_incidents_acknowledge_and_resolve():
 
             target_id = incidents[0]["id"]
 
-            # Acknowledge incident
+            # 1. Acknowledge incident: Active/OPEN -> ACKNOWLEDGED
             ack_res = await client.post(f"/api/v1/alerts/incidents/{target_id}/acknowledge")
             assert ack_res.status_code == 200
             assert ack_res.json()["status"] == "ACKNOWLEDGED"
 
-            # Resolve incident
-            res_res = await client.post(f"/api/v1/alerts/incidents/{target_id}/resolve")
+            # 2. Guard: Cannot resolve directly from ACKNOWLEDGED without investigation
+            premature_res = await client.post(f"/api/v1/alerts/incidents/{target_id}/resolve")
+            assert premature_res.status_code == 400
+            assert "Cannot resolve incident directly" in premature_res.json()["detail"]
+
+            # 3. Transition to INVESTIGATING
+            inv_res = await client.post(f"/api/v1/alerts/incidents/{target_id}/investigate")
+            assert inv_res.status_code == 200
+            assert inv_res.json()["status"] == "INVESTIGATING"
+
+            # 4. Automated verification check probe
+            verify_res = await client.get(f"/api/v1/alerts/incidents/{target_id}/verify")
+            assert verify_res.status_code == 200
+            verification = verify_res.json()
+            assert "is_breached" in verification
+            assert "is_healthy" in verification
+            assert "message" in verification
+
+            # 5. Resolve with verified resolution notes and/or force_override
+            res_res = await client.post(
+                f"/api/v1/alerts/incidents/{target_id}/resolve",
+                json={
+                    "resolution_notes": "Identified high latency root cause; restarted downstream worker pod and refreshed cache.",
+                    "force_override": True
+                }
+            )
             assert res_res.status_code == 200
             assert res_res.json()["status"] == "RESOLVED"
+            assert "resolution_notes" in res_res.json()
+
 

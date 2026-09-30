@@ -2,9 +2,9 @@ import logging
 from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 
-from app.models import AlertRule, Incident, NotificationChannel, NotificationLog, Application
+from app.models import AlertRule, Incident, NotificationChannel, NotificationLog, Application, RUMEvent, ErrorEvent, SyntheticCheck
 from app.services.notification_manager import notification_dispatcher
 
 logger = logging.getLogger("ricoz.alert_evaluator")
@@ -66,14 +66,82 @@ class AlertEvaluator:
             return value == threshold
         return False
 
+    def is_rule_breached(self, value: float, operator: str, threshold: float) -> bool:
+        """Public helper to evaluate whether a metric breaches rule operator & threshold."""
+        return self._check_breach(value, operator, threshold)
+
+    async def get_current_metric_value(self, rule: AlertRule, db: AsyncSession) -> float:
+        """
+        Calculates the real-time metric value for an alert rule over the last 5-minute rolling window.
+        Supported metric types: error_rate, p95_latency, failed_requests, synthetic_failure.
+        """
+        now = datetime.now(timezone.utc)
+        window_start = now - timedelta(minutes=5)
+        val = 0.0
+
+        if rule.metric_type == "error_rate":
+            total_ev_res = await db.execute(
+                select(func.count(RUMEvent.id)).where(
+                    RUMEvent.application_id == rule.application_id,
+                    RUMEvent.created_at >= window_start
+                )
+            )
+            total_events = total_ev_res.scalar() or 0
+
+            err_ev_res = await db.execute(
+                select(func.count(ErrorEvent.id)).where(
+                    ErrorEvent.application_id == rule.application_id,
+                    ErrorEvent.created_at >= window_start
+                )
+            )
+            error_events = err_ev_res.scalar() or 0
+
+            if total_events > 0:
+                val = (error_events / total_events) * 100.0
+            elif error_events > 0:
+                val = 100.0
+            else:
+                val = 0.0
+
+        elif rule.metric_type == "p95_latency":
+            dur_res = await db.execute(
+                select(func.avg(RUMEvent.duration)).where(
+                    RUMEvent.application_id == rule.application_id,
+                    RUMEvent.duration.is_not(None),
+                    RUMEvent.created_at >= window_start
+                )
+            )
+            val = float(dur_res.scalar() or 0.0)
+
+        elif rule.metric_type == "failed_requests":
+            fail_res = await db.execute(
+                select(func.count(RUMEvent.id)).where(
+                    RUMEvent.application_id == rule.application_id,
+                    RUMEvent.status_code >= 400,
+                    RUMEvent.created_at >= window_start
+                )
+            )
+            val = float(fail_res.scalar() or 0.0)
+
+        elif rule.metric_type == "synthetic_failure":
+            chk_res = await db.execute(
+                select(func.count(SyntheticCheck.id)).where(
+                    SyntheticCheck.application_id == rule.application_id,
+                    SyntheticCheck.status == "DOWN"
+                )
+            )
+            val = float(chk_res.scalar() or 0.0)
+
+        return round(val, 2)
+
     async def _trigger_incident(self, rule: AlertRule, current_value: float, db: AsyncSession) -> Incident:
         dedup_key = f"alert:{rule.id}:{rule.application_id}"
         
-        # Check if an open incident already exists
+        # Check if an open, acknowledged, or investigating incident already exists
         res = await db.execute(
             select(Incident).where(
                 Incident.alert_rule_id == rule.id,
-                Incident.status.in_(["OPEN", "ACKNOWLEDGED"])
+                Incident.status.in_(["OPEN", "ACKNOWLEDGED", "INVESTIGATING"])
             )
         )
         existing = res.scalar_one_or_none()
@@ -138,7 +206,7 @@ class AlertEvaluator:
         res = await db.execute(
             select(Incident).where(
                 Incident.alert_rule_id == rule.id,
-                Incident.status.in_(["OPEN", "ACKNOWLEDGED"])
+                Incident.status.in_(["OPEN", "ACKNOWLEDGED", "INVESTIGATING"])
             )
         )
         incidents = res.scalars().all()
@@ -148,6 +216,7 @@ class AlertEvaluator:
             inc.status = "RESOLVED"
             inc.resolved_at = now
             inc.current_value = current_value
+            inc.resolution_notes = "Resolved automatically: metric value returned to safe operating threshold."
             
             # Send resolve notification
             channels_res = await db.execute(

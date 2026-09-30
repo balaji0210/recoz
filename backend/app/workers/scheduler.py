@@ -298,58 +298,7 @@ class ProductionScheduler:
 
             for rule in rules:
                 try:
-                    val = 0.0
-                    if rule.metric_type == "error_rate":
-                        total_ev_res = await db.execute(
-                            select(func.count(RUMEvent.id)).where(
-                                RUMEvent.application_id == rule.application_id,
-                                RUMEvent.created_at >= window_start
-                            )
-                        )
-                        total_events = total_ev_res.scalar() or 0
-
-                        err_ev_res = await db.execute(
-                            select(func.count(ErrorEvent.id)).where(
-                                ErrorEvent.application_id == rule.application_id,
-                                ErrorEvent.created_at >= window_start
-                            )
-                        )
-                        error_events = err_ev_res.scalar() or 0
-
-                        if total_events > 0:
-                            val = (error_events / total_events) * 100.0
-                        elif error_events > 0:
-                            val = 100.0
-
-                    elif rule.metric_type == "p95_latency":
-                        dur_res = await db.execute(
-                            select(func.avg(RUMEvent.duration)).where(
-                                RUMEvent.application_id == rule.application_id,
-                                RUMEvent.duration.is_not(None),
-                                RUMEvent.created_at >= window_start
-                            )
-                        )
-                        val = float(dur_res.scalar() or 0.0)
-
-                    elif rule.metric_type == "failed_requests":
-                        fail_res = await db.execute(
-                            select(func.count(RUMEvent.id)).where(
-                                RUMEvent.application_id == rule.application_id,
-                                RUMEvent.status_code >= 400,
-                                RUMEvent.created_at >= window_start
-                            )
-                        )
-                        val = float(fail_res.scalar() or 0)
-
-                    elif rule.metric_type == "synthetic_failure":
-                        chk_res = await db.execute(
-                            select(func.count(SyntheticCheck.id)).where(
-                                SyntheticCheck.application_id == rule.application_id,
-                                SyntheticCheck.status == "DOWN"
-                            )
-                        )
-                        val = float(chk_res.scalar() or 0)
-
+                    val = await alert_evaluator.get_current_metric_value(rule, db)
                     await alert_evaluator.evaluate_rule(rule, val, db)
                 except Exception as rule_err:
                     logger.error(f"Error evaluating alert rule {rule.id} ({rule.name}): {str(rule_err)}")
