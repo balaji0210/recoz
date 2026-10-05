@@ -23,6 +23,20 @@ export const App: React.FC = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
+    if (isMobileSidebarOpen) {
+      document.body.classList.add('scroll-locked');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    };
+  }, [isMobileSidebarOpen]);
+
+  useEffect(() => {
     localStorage.setItem('rz_active_tab', currentTab);
   }, [currentTab]);
   

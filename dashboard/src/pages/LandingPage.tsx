@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Activity, Globe, AlertOctagon, GitMerge, Cpu, Bell, Shield,
   ArrowRight, CheckCircle2, Copy, Check, Terminal, Zap, Code2,
@@ -23,6 +23,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const [simulating, setSimulating] = useState(false);
   const [simSuccess, setSimSuccess] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileNavOpen) {
+      document.body.classList.add('scroll-locked');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    };
+  }, [mobileNavOpen]);
 
   const snippets = {
     npm: `// 1. Install RUM SDK

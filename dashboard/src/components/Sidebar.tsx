@@ -58,6 +58,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         position: isMobileOpen ? 'fixed' : 'sticky',
         top: 0,
         zIndex: isMobileOpen ? 100 : 40,
+        overscrollBehavior: 'contain',
         boxShadow: isMobileOpen ? '4px 0 24px rgba(0, 0, 0, 0.3)' : '1px 0 3px rgba(0, 0, 0, 0.02)'
       }}
     >

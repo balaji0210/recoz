@@ -320,6 +320,13 @@ input:focus, select:focus, textarea:focus {
   min-width: 600px;
 }
 
+/* Body Scroll Lock for Drawers and Modals */
+body.scroll-locked {
+  overflow: hidden !important;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
 /* Mobile Sidebar Drawer */
 .sidebar-backdrop {
   position: fixed;
@@ -329,6 +336,8 @@ input:focus, select:focus, textarea:focus {
   -webkit-backdrop-filter: blur(4px);
   z-index: 90;
   animation: fadeIn 0.2s ease-out;
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .sidebar-drawer {
@@ -340,6 +349,8 @@ input:focus, select:focus, textarea:focus {
   z-index: 100;
   animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Responsive Media Queries */

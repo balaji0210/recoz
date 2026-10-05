@@ -29,6 +29,20 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
   const [modalError, setModalError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (resolvingIncident) {
+      document.body.classList.add('scroll-locked');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    };
+  }, [resolvingIncident]);
+
+  useEffect(() => {
     loadAlertData();
   }, [appId]);
 
