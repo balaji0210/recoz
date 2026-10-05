@@ -166,9 +166,9 @@ export const ApmTimeseriesChart: React.FC<ApmTimeseriesChartProps> = ({
   const activeX = hoveredIdx !== null ? paddingLeft + hoveredIdx * stepX : null;
 
   return (
-    <div className="glass-panel" style={{ padding: '24px 26px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="glass-panel" style={{ padding: 'clamp(14px, 2.5vw, 24px)', display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Header controls & metric switcher tabs */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <span style={{
@@ -183,7 +183,7 @@ export const ApmTimeseriesChart: React.FC<ApmTimeseriesChartProps> = ({
             }}>
               <config.icon size={16} />
             </span>
-            <h2 style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: 'clamp(15px, 2vw, 17px)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
               {config.label}
             </h2>
             <span className="badge badge-indigo" style={{ fontSize: 10, padding: '2px 8px' }}>
@@ -196,7 +196,7 @@ export const ApmTimeseriesChart: React.FC<ApmTimeseriesChartProps> = ({
         </div>
 
         {/* Metric Mode Pill Selectors */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--bg-primary)', padding: 4, borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6, background: 'var(--bg-primary)', padding: 4, borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
           {[
             { id: 'throughput', label: 'Throughput (RPM)', icon: Activity },
             { id: 'latency', label: 'Latency (P95/Avg)', icon: Clock },
@@ -409,7 +409,7 @@ export const ApmTimeseriesChart: React.FC<ApmTimeseriesChartProps> = ({
       {/* Metric Summary Statistics Strip */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))',
         gap: 12,
         paddingTop: 14,
         borderTop: '1px solid var(--border-subtle)'

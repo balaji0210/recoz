@@ -176,11 +176,11 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
   });
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: 'clamp(16px, 3vw, 28px)', display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Page Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+          <h1 style={{ fontSize: 'clamp(20px, 3vw, 24px)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
             Alerts & Incident Management
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -192,6 +192,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
         <div style={{
           display: 'flex',
           alignItems: 'center',
+          flexWrap: 'wrap',
           gap: 6,
           background: 'var(--bg-primary)',
           border: '1px solid var(--border-subtle)',
@@ -222,7 +223,9 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
           fontSize: 13,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 8
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {actionNotice.type === 'success' ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />}
@@ -238,15 +241,15 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
       )}
 
       {/* Incidents Section */}
-      <div className="glass-panel" style={{ padding: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div className="glass-panel" style={{ padding: 'clamp(14px, 2.5vw, 20px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
             <Radio size={16} color="#e11d48" className="animate-pulse-dot" />
             Incidents Lifecycle Management ({incidents.filter(i => i.status !== 'RESOLVED').length} active)
           </h2>
 
           {/* Filter Pills */}
-          <div style={{ display: 'flex', gap: 6, background: 'var(--bg-primary)', padding: 3, borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, background: 'var(--bg-primary)', padding: 3, borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
             {(['ALL', 'ACTIVE', 'INVESTIGATING', 'RESOLVED'] as const).map(tab => (
               <button
                 key={tab}
@@ -317,7 +320,8 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    gap: 16,
+                    flexWrap: 'wrap',
+                    gap: 14,
                     transition: 'all 0.2s ease'
                   }}
                 >
@@ -486,7 +490,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
-          padding: 20
+          padding: '16px'
         }}>
           <div style={{
             background: 'var(--bg-secondary)',
@@ -494,8 +498,9 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
             borderRadius: 12,
             width: '100%',
             maxWidth: 560,
+            maxHeight: '90vh',
             boxShadow: '0 24px 48px rgba(0, 0, 0, 0.4)',
-            overflow: 'hidden',
+            overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column'
           }}>
@@ -550,7 +555,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', marginBottom: 4 }}>
                   {resolvingIncident.title}
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 14 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                   <span>Severity: <strong style={{ color: 'var(--text-main)' }}>{resolvingIncident.severity}</strong></span>
                   <span>Threshold: <strong style={{ color: 'var(--text-main)' }}>{resolvingIncident.threshold}</strong></span>
                 </div>
@@ -558,7 +563,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
 
               {/* Automated Health / Metric Verification Probe */}
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                   <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Activity size={14} color="var(--accent-indigo)" />
                     Automated Health & Telemetry Probe
@@ -618,7 +623,8 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 16,
+                      flexWrap: 'wrap',
+                      gap: 12,
                       fontSize: 12,
                       background: '#ffffff',
                       padding: '8px 12px',
@@ -728,6 +734,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
+              flexWrap: 'wrap',
               gap: 10
             }}>
               <button
@@ -779,15 +786,15 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
       )}
 
       {/* Alert Rules & Notification Channels Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: 20 }}>
         {/* Rules Table */}
-        <div className="glass-panel" style={{ padding: 20 }}>
+        <div className="glass-panel" style={{ padding: 'clamp(14px, 2.5vw, 20px)' }}>
           <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-main)', marginBottom: 14 }}>
             Evaluation Rules ({rules.length})
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {rules.map((rule) => (
-              <div key={rule.id} style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div key={rule.id} style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>{rule.name}</div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
@@ -803,7 +810,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
         </div>
 
         {/* Dispatcher Adapter Test */}
-        <div className="glass-panel" style={{ padding: 20 }}>
+        <div className="glass-panel" style={{ padding: 'clamp(14px, 2.5vw, 20px)' }}>
           <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-main)', marginBottom: 14 }}>
             Dispatch Adapter Verification
           </h3>
@@ -811,7 +818,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
             Test outbound notification channels with standardized rich payload formatting
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: 10 }}>
             {['Slack Webhook', 'PagerDuty', 'Email (SMTP)', 'Jira Incident', 'ServiceNow'].map((adapter) => (
               <button
                 key={adapter}

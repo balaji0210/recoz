@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Search, Zap, Sun, Moon, ShieldCheck, User, Sparkles } from 'lucide-react';
+import { Clock, Search, Zap, Sun, Moon, ShieldCheck, User, Sparkles, Menu } from 'lucide-react';
 
 interface HeaderProps {
   timeRange: string;
@@ -8,6 +8,7 @@ interface HeaderProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
   onGoLanding?: () => void;
+  onToggleMobileMenu?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,17 +17,53 @@ export const Header: React.FC<HeaderProps> = ({
   onTriggerTraffic,
   theme,
   toggleTheme,
-  onGoLanding
+  onGoLanding,
+  onToggleMobileMenu
 }) => {
   return (
-    <header className="glass-header" style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 28px', position: 'sticky', top: 0, zIndex: 30 }}>
-      {/* Search Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, width: 380 }}>
-        <div style={{ position: 'relative', width: '100%' }}>
+    <header
+      className="glass-header"
+      style={{
+        minHeight: 64,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '10px clamp(12px, 3vw, 28px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 30,
+        gap: 12,
+        flexWrap: 'wrap'
+      }}
+    >
+      {/* Left: Mobile Hamburger & Search Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 240px', minWidth: 0, maxWidth: '100%' }}>
+        {onToggleMobileMenu && (
+          <button
+            onClick={onToggleMobileMenu}
+            aria-label="Open Navigation Menu"
+            style={{
+              background: 'var(--bg-primary)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 8,
+              padding: '8px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-main)',
+              cursor: 'pointer',
+              flexShrink: 0
+            }}
+          >
+            <Menu size={18} />
+          </button>
+        )}
+
+        <div style={{ position: 'relative', flex: 1, minWidth: 140, maxWidth: 380 }}>
           <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
-            placeholder="Search traces, errors, routes, or spans..."
+            placeholder="Search traces, errors, spans..."
             style={{
               width: '100%',
               background: 'var(--bg-primary)',
@@ -43,9 +80,9 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         {/* Time Range Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: 3 }}>
+        <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: 2 }}>
           {['1h', '24h', '7d', '30d'].map((tr) => {
             const isSelected = timeRange === tr;
             return (
@@ -58,8 +95,8 @@ export const Header: React.FC<HeaderProps> = ({
                   boxShadow: isSelected ? 'var(--shadow-sm)' : 'none',
                   border: 'none',
                   borderRadius: 6,
-                  padding: '5px 12px',
-                  fontSize: 12,
+                  padding: '5px 8px',
+                  fontSize: 11,
                   fontWeight: isSelected ? 700 : 500,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
@@ -80,10 +117,10 @@ export const Header: React.FC<HeaderProps> = ({
             background: 'var(--bg-primary)',
             border: '1px solid var(--border-subtle)',
             borderRadius: 8,
-            padding: '7px 12px',
+            padding: '7px 10px',
             display: 'flex',
             alignItems: 'center',
-            gap: 7,
+            gap: 6,
             color: 'var(--text-main)',
             fontSize: 12,
             fontWeight: 600,
@@ -93,13 +130,13 @@ export const Header: React.FC<HeaderProps> = ({
         >
           {theme === 'light' ? (
             <>
-              <Sun size={15} color="#d97706" />
-              <span>Light</span>
+              <Sun size={14} color="#d97706" />
+              <span className="hide-on-small-mobile">Light</span>
             </>
           ) : (
             <>
-              <Moon size={15} color="#818cf8" />
-              <span>Dark</span>
+              <Moon size={14} color="#818cf8" />
+              <span className="hide-on-small-mobile">Dark</span>
             </>
           )}
         </button>
@@ -108,12 +145,12 @@ export const Header: React.FC<HeaderProps> = ({
         {onGoLanding && (
           <button
             onClick={onGoLanding}
-            className="btn-secondary"
-            style={{ fontSize: 12, padding: '7px 12px' }}
+            className="btn-secondary hide-on-small-mobile"
+            style={{ fontSize: 12, padding: '7px 10px' }}
             title="View Product Landing Page"
           >
             <Sparkles size={14} color="#6366f1" />
-            <span>Landing Page</span>
+            <span>Landing</span>
           </button>
         )}
 
@@ -122,18 +159,19 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onTriggerTraffic}
             className="btn-primary"
-            style={{ fontSize: 12, padding: '7px 14px' }}
+            style={{ fontSize: 12, padding: '7px 12px' }}
+            title="Simulate 15 live user sessions"
           >
             <Zap size={14} />
-            <span>Simulate Traffic</span>
+            <span className="hide-on-small-mobile">Simulate</span>
           </button>
         )}
 
         {/* User Profile */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 10, borderLeft: '1px solid var(--border-subtle)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 6, borderLeft: '1px solid var(--border-subtle)' }}>
           <div style={{
-            width: 34,
-            height: 34,
+            width: 32,
+            height: 32,
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #4f46e5, #06b6d4)',
             display: 'flex',
@@ -141,15 +179,16 @@ export const Header: React.FC<HeaderProps> = ({
             justifyContent: 'center',
             color: '#fff',
             fontWeight: 700,
-            fontSize: 12,
-            boxShadow: '0 2px 6px rgba(79, 70, 229, 0.25)'
+            fontSize: 11,
+            boxShadow: '0 2px 6px rgba(79, 70, 229, 0.25)',
+            flexShrink: 0
           }}>
             AD
           </div>
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)' }}>Admin</div>
+          <div className="hide-on-mobile">
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.2 }}>Admin</div>
             <div style={{ fontSize: 10, color: '#059669', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} />
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#059669' }} />
               Live Online
             </div>
           </div>
@@ -158,3 +197,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

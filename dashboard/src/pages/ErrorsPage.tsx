@@ -131,11 +131,11 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
   };
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: 'clamp(14px, 3vw, 24px) clamp(12px, 3vw, 28px)', display: 'flex', flexDirection: 'column', gap: 'clamp(16px, 3vw, 24px)', minWidth: 0 }}>
       {/* Header & Filter Switcher */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+          <h1 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
             Error Diagnostics & Stack Symbolicator
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -144,7 +144,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
         </div>
 
         {/* Status Filter */}
-        <div style={{ display: 'flex', background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: 3 }}>
+        <div style={{ display: 'flex', background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: 3, flexWrap: 'wrap', gap: 4 }}>
           {['unhandled', 'resolved', 'ignored', ''].map((st) => (
             <button
               key={st || 'all'}
@@ -155,7 +155,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                 boxShadow: statusFilter === st ? 'var(--shadow-sm)' : 'none',
                 border: 'none',
                 borderRadius: 6,
-                padding: '6px 14px',
+                padding: '6px 12px',
                 fontSize: 12,
                 fontWeight: 700,
                 textTransform: 'capitalize',
@@ -169,7 +169,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
       </div>
 
       {/* Main Two Column Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: 20, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: 20, alignItems: 'start' }}>
         {/* Error Groups List */}
         <div className="glass-panel" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
           {errorGroups.length === 0 ? (
@@ -192,7 +192,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 4 }}>
                     <span style={{ fontSize: 12, fontWeight: 800, color: '#e11d48' }}>
                       {err.error_type}
                     </span>
@@ -203,7 +203,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                   <div style={{ fontSize: 12, color: 'var(--text-main)', fontWeight: 600, marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {err.message}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', flexWrap: 'wrap', gap: 6 }}>
                     <span>{err.occurrence_count} events • {err.affected_users_count} users</span>
                     <span className="font-mono">{err.fingerprint.slice(0, 8)}...</span>
                   </div>
@@ -215,7 +215,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
 
         {/* Selected Group Detail & Stack Trace */}
         {selectedGroup && (
-          <div className="glass-panel" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="glass-panel" style={{ padding: 'clamp(16px, 3vw, 24px)', display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
             {/* Action Feedback Banner */}
             {actionToast && (
               <div style={{
@@ -228,7 +228,9 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                 fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 8
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <CheckCircle2 size={16} /> {actionToast}
@@ -243,9 +245,9 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
             )}
 
             {/* Action Bar */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: 16 }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                   <span className="badge badge-danger">
                     {selectedGroup.error_type}
                   </span>
@@ -262,11 +264,11 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                     [{selectedGroup.status}]
                   </span>
                 </div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
                   {selectedGroup.message}
                 </h2>
               </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                 {selectedGroup.status !== 'resolved' ? (
                   <button
                     onClick={() => handleUpdateStatus('resolved')}
@@ -281,7 +283,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                     className="btn-secondary"
                     style={{ fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
                   >
-                    <AlertOctagon size={14} /> Reopen (Unhandled)
+                    <AlertOctagon size={14} /> Reopen
                   </button>
                 )}
                 {selectedGroup.status !== 'ignored' ? (
@@ -305,7 +307,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
             </div>
 
             {/* Diagnostics Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: 12 }}>
               <div style={{ background: 'var(--bg-primary)', padding: '12px 14px', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>Occurrences</span>
                 <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-main)' }}>{selectedGroup.occurrence_count}</div>
@@ -325,6 +327,7 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                 </div>
               </div>
             </div>
+
 
             {/* Symbolicated Stack Trace Frame */}
             <div>

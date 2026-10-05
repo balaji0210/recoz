@@ -3,7 +3,7 @@ import {
   Activity, Globe, AlertOctagon, GitMerge, Cpu, Bell, Shield,
   ArrowRight, CheckCircle2, Copy, Check, Terminal, Zap, Code2,
   Layers, ExternalLink, Sun, Moon, Sparkles, ChevronRight, BarChart3,
-  Server, Monitor, Clock
+  Server, Monitor, Clock, Menu, X
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -22,6 +22,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const [activeFeatureTab, setActiveFeatureTab] = useState<number>(0);
   const [simulating, setSimulating] = useState(false);
   const [simSuccess, setSimSuccess] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const snippets = {
     npm: `// 1. Install RUM SDK
@@ -173,24 +174,25 @@ fetch('/api/v1/checkout', {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 clamp(16px, 5vw, 64px)',
-        height: 72
+        minHeight: 68
       }}>
         {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer' }} onClick={onLaunchApp}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={onLaunchApp}>
           <div style={{
-            width: 42,
-            height: 42,
-            borderRadius: 12,
+            width: 38,
+            height: 38,
+            borderRadius: 10,
             background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(79, 70, 229, 0.35)'
+            boxShadow: '0 4px 14px rgba(79, 70, 229, 0.35)',
+            flexShrink: 0
           }}>
-            <Activity size={24} color="#ffffff" />
+            <Activity size={22} color="#ffffff" />
           </div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 19, letterSpacing: '-0.03em', lineHeight: 1.2 }}>
+            <div style={{ fontWeight: 800, fontSize: 18, letterSpacing: '-0.03em', lineHeight: 1.2 }}>
               Ricoz<span style={{ color: '#4f46e5' }}>AppMon</span>
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
@@ -199,8 +201,8 @@ fetch('/api/v1/checkout', {
           </div>
         </div>
 
-        {/* Anchor Links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28, fontSize: 14, fontWeight: 600 }}>
+        {/* Desktop Anchor Links */}
+        <div className="hide-on-tablet" style={{ display: 'flex', alignItems: 'center', gap: 24, fontSize: 14, fontWeight: 600 }}>
           <a href="#features" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color = '#4f46e5')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>Features</a>
           <a href="#architecture" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color = '#4f46e5')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>Architecture</a>
           <a href="#quickstart" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color = '#4f46e5')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>SDK Quickstart</a>
@@ -208,7 +210,7 @@ fetch('/api/v1/checkout', {
         </div>
 
         {/* Right CTA / Theme Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
@@ -216,35 +218,96 @@ fetch('/api/v1/checkout', {
               background: 'var(--bg-secondary)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 8,
-              padding: '8px 12px',
+              padding: '7px 10px',
               display: 'flex',
               alignItems: 'center',
               gap: 6,
               color: 'var(--text-main)',
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: 600,
               cursor: 'pointer'
             }}
           >
-            {theme === 'light' ? <Sun size={15} color="#d97706" /> : <Moon size={15} color="#818cf8" />}
-            <span>{theme === 'light' ? 'Light' : 'Dark'}</span>
+            {theme === 'light' ? <Sun size={14} color="#d97706" /> : <Moon size={14} color="#818cf8" />}
+            <span className="hide-on-small-mobile">{theme === 'light' ? 'Light' : 'Dark'}</span>
           </button>
 
           <button
             onClick={onLaunchApp}
             className="btn-primary"
             style={{
-              padding: '9px 18px',
-              fontSize: 14,
-              borderRadius: 10,
+              padding: '8px 14px',
+              fontSize: 13,
+              borderRadius: 8,
               fontWeight: 700
             }}
           >
-            <span>Launch APM Console</span>
-            <ArrowRight size={16} />
+            <span>Launch Console</span>
+            <ArrowRight size={14} />
+          </button>
+
+          {/* Mobile Hamburger Menu Toggle */}
+          <button
+            onClick={() => setMobileNavOpen(prev => !prev)}
+            aria-label="Toggle mobile menu"
+            className="btn-secondary"
+            style={{
+              display: 'none',
+              padding: '7px 10px',
+              borderRadius: 8
+            }}
+            id="landing-mobile-menu-btn"
+          >
+            {mobileNavOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </nav>
+
+      {/* Mobile Navigation Dropdown Drawer */}
+      {mobileNavOpen && (
+        <div
+          style={{
+            background: 'var(--bg-card)',
+            borderBottom: '1px solid var(--border-subtle)',
+            padding: '16px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            boxShadow: 'var(--shadow-lg)',
+            animation: 'slideInDown 0.2s ease-out'
+          }}
+        >
+          <a
+            href="#features"
+            onClick={() => setMobileNavOpen(false)}
+            style={{ color: 'var(--text-main)', textDecoration: 'none', fontSize: 15, fontWeight: 700, padding: '6px 0' }}
+          >
+            Features & Capabilities
+          </a>
+          <a
+            href="#architecture"
+            onClick={() => setMobileNavOpen(false)}
+            style={{ color: 'var(--text-main)', textDecoration: 'none', fontSize: 15, fontWeight: 700, padding: '6px 0' }}
+          >
+            Telemetry Architecture
+          </a>
+          <a
+            href="#quickstart"
+            onClick={() => setMobileNavOpen(false)}
+            style={{ color: 'var(--text-main)', textDecoration: 'none', fontSize: 15, fontWeight: 700, padding: '6px 0' }}
+          >
+            SDK Quickstart Guide
+          </a>
+          <a
+            href="#preview"
+            onClick={() => setMobileNavOpen(false)}
+            style={{ color: 'var(--text-main)', textDecoration: 'none', fontSize: 15, fontWeight: 700, padding: '6px 0' }}
+          >
+            Live APM Console Preview
+          </a>
+        </div>
+      )}
+
 
       {/* ========================================================================= */}
       {/* 2. HERO SECTION */}
@@ -376,11 +439,11 @@ fetch('/api/v1/checkout', {
         {/* Live Metrics Ribbon */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
           gap: 16,
           maxWidth: 1040,
           margin: '0 auto',
-          padding: '20px 24px',
+          padding: '20px clamp(14px, 3vw, 24px)',
           background: 'var(--bg-card)',
           borderRadius: 16,
           border: '1px solid var(--border-subtle)',
@@ -424,7 +487,7 @@ fetch('/api/v1/checkout', {
           {/* Mock Console Header Bar */}
           <div style={{
             background: 'var(--bg-secondary)',
-            padding: '16px 24px',
+            padding: '14px clamp(14px, 3vw, 24px)',
             borderBottom: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'center',
@@ -432,39 +495,39 @@ fetch('/api/v1/checkout', {
             flexWrap: 'wrap',
             gap: 12
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444' }} />
-                <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }} />
-                <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#10b981' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, overflow: 'hidden' }}>
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#ef4444' }} />
+                <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#f59e0b' }} />
+                <span style={{ width: 11, height: 11, borderRadius: '50%', background: '#10b981' }} />
               </div>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)', marginLeft: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginLeft: 4, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                 ricoz-apm-console://demo-ecommerce-app/live-overview
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span className="badge badge-healthy">
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} />
-                All 6 Pipelines Operational
+                Pipelines Operational
               </span>
               <button
                 onClick={onLaunchApp}
                 className="btn-primary"
-                style={{ padding: '6px 14px', fontSize: 12 }}
+                style={{ padding: '6px 12px', fontSize: 12 }}
               >
-                <span>Interactive Live View</span>
+                <span>Interactive View</span>
                 <ExternalLink size={12} />
               </button>
             </div>
           </div>
 
           {/* Interactive Mock Dashboard Body */}
-          <div style={{ padding: '28px' }}>
+          <div style={{ padding: 'clamp(16px, 3vw, 28px)' }}>
             {/* Top Stat Cards */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
               gap: 16,
               marginBottom: 24
             }}>
@@ -496,7 +559,7 @@ fetch('/api/v1/checkout', {
             {/* Split Mock Visual: Traces Waterfall & Web Vitals */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
               gap: 20
             }}>
               {/* Left: Distributed Trace Span Waterfall Preview */}
@@ -504,9 +567,10 @@ fetch('/api/v1/checkout', {
                 background: 'var(--bg-primary)',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: 12,
-                padding: 20
+                padding: 'clamp(14px, 2.5vw, 20px)',
+                minWidth: 0
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <GitMerge size={16} color="#4f46e5" />
                     <span style={{ fontSize: 14, fontWeight: 700 }}>Live Distributed Trace Waterfall</span>
@@ -516,39 +580,39 @@ fetch('/api/v1/checkout', {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700 }}>
-                      <span>Browser: POST /api/v1/checkout</span>
-                      <span style={{ color: '#4f46e5' }}>148ms</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, gap: 8 }}>
+                      <span style={{ wordBreak: 'break-all' }}>Browser: POST /api/v1/checkout</span>
+                      <span style={{ color: '#4f46e5', flexShrink: 0 }}>148ms</span>
                     </div>
                     <div style={{ height: 6, background: '#c7d2fe', borderRadius: 3, marginTop: 6, width: '100%' }}>
                       <div style={{ width: '100%', height: '100%', background: '#4f46e5', borderRadius: 3 }} />
                     </div>
                   </div>
 
-                  <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-subtle)', marginLeft: 16 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600 }}>
-                      <span>Backend: JWT Authenticate & Validate</span>
-                      <span style={{ color: '#0891b2' }}>8ms</span>
+                  <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-subtle)', marginLeft: 'clamp(6px, 2vw, 16px)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600, gap: 8 }}>
+                      <span style={{ wordBreak: 'break-all' }}>Backend: JWT Authenticate</span>
+                      <span style={{ color: '#0891b2', flexShrink: 0 }}>8ms</span>
                     </div>
                     <div style={{ height: 6, background: '#cffafe', borderRadius: 3, marginTop: 6, width: '100%' }}>
                       <div style={{ width: '15%', height: '100%', background: '#0891b2', borderRadius: 3 }} />
                     </div>
                   </div>
 
-                  <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-subtle)', marginLeft: 32 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600 }}>
-                      <span>Database: SELECT inventory FOR UPDATE</span>
-                      <span style={{ color: '#059669' }}>24ms</span>
+                  <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-subtle)', marginLeft: 'clamp(10px, 3.5vw, 28px)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600, gap: 8 }}>
+                      <span style={{ wordBreak: 'break-all' }}>DB: SELECT inventory</span>
+                      <span style={{ color: '#059669', flexShrink: 0 }}>24ms</span>
                     </div>
                     <div style={{ height: 6, background: '#d1fae5', borderRadius: 3, marginTop: 6, width: '100%' }}>
                       <div style={{ width: '35%', height: '100%', background: '#059669', borderRadius: 3, marginLeft: '15%' }} />
                     </div>
                   </div>
 
-                  <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-subtle)', marginLeft: 32 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600 }}>
-                      <span>Payment: Stripe Gateway Charge Webhook</span>
-                      <span style={{ color: '#d97706' }}>92ms</span>
+                  <div style={{ padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-subtle)', marginLeft: 'clamp(10px, 3.5vw, 28px)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600, gap: 8 }}>
+                      <span style={{ wordBreak: 'break-all' }}>Payment: Stripe Gateway Charge</span>
+                      <span style={{ color: '#d97706', flexShrink: 0 }}>92ms</span>
                     </div>
                     <div style={{ height: 6, background: '#fef3c7', borderRadius: 3, marginTop: 6, width: '100%' }}>
                       <div style={{ width: '60%', height: '100%', background: '#d97706', borderRadius: 3, marginLeft: '40%' }} />
@@ -562,7 +626,8 @@ fetch('/api/v1/checkout', {
                 background: 'var(--bg-primary)',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: 12,
-                padding: 20
+                padding: 'clamp(14px, 2.5vw, 20px)',
+                minWidth: 0
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -642,7 +707,7 @@ fetch('/api/v1/checkout', {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  padding: '10px 16px',
+                  padding: '10px 14px',
                   borderRadius: 10,
                   border: isSelected ? '1px solid #6366f1' : '1px solid var(--border-subtle)',
                   background: isSelected ? (theme === 'light' ? '#eef2ff' : 'rgba(99, 102, 241, 0.25)') : 'var(--bg-card)',
@@ -669,11 +734,11 @@ fetch('/api/v1/checkout', {
               background: 'var(--bg-card)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 16,
-              padding: 'clamp(24px, 4vw, 40px)',
+              padding: 'clamp(20px, 4vw, 40px)',
               boxShadow: 'var(--shadow-md)',
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: 36,
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+              gap: 'clamp(20px, 4vw, 36px)',
               alignItems: 'center'
             }}>
               <div>
@@ -683,15 +748,15 @@ fetch('/api/v1/checkout', {
                 <h3 style={{ fontSize: 'clamp(22px, 3vw, 32px)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 16 }}>
                   {current.headline}
                 </h3>
-                <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 28 }}>
+                <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 24 }}>
                   {current.desc}
                 </p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 28 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 100px), 1fr))', gap: 12, marginBottom: 24 }}>
                   {current.stats.map((s, idx) => (
-                    <div key={idx} style={{ background: 'var(--bg-primary)', padding: 14, borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
+                    <div key={idx} style={{ background: 'var(--bg-primary)', padding: 12, borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
                       <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{s.label}</div>
-                      <div style={{ fontSize: 16, fontWeight: 800, marginTop: 4, color: current.color }}>{s.val}</div>
+                      <div style={{ fontSize: 15, fontWeight: 800, marginTop: 4, color: current.color }}>{s.val}</div>
                     </div>
                   ))}
                 </div>
@@ -716,23 +781,23 @@ fetch('/api/v1/checkout', {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                minHeight: 280,
+                minHeight: 240,
                 textAlign: 'center'
               }}>
                 <div style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: 20,
+                  width: 68,
+                  height: 68,
+                  borderRadius: 18,
                   background: `linear-gradient(135deg, ${current.color} 0%, #4f46e5 100%)`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   boxShadow: `0 8px 24px ${current.color}40`,
-                  marginBottom: 20
+                  marginBottom: 16
                 }}>
-                  <CurrentIcon size={36} color="#ffffff" />
+                  <CurrentIcon size={32} color="#ffffff" />
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 8 }}>
+                <div style={{ fontSize: 17, fontWeight: 800, marginBottom: 8 }}>
                   Integrated & Ready Out-of-the-Box
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--text-muted)', maxWidth: 340 }}>
@@ -768,65 +833,65 @@ fetch('/api/v1/checkout', {
         {/* Pipeline Diagram Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
           gap: 16,
           position: 'relative'
         }}>
           {/* Step 1 */}
-          <div style={{ background: 'var(--bg-card)', padding: 20, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--bg-card)', padding: 18, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <Monitor size={18} color="#0891b2" />
               <span style={{ fontSize: 12, fontWeight: 800, color: '#0891b2' }}>STEP 01</span>
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Browser & RUM SDK</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Browser & RUM SDK</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
               Intercepts web vitals, fetch/xhr requests, and unhandled errors. Stitches W3C traceparents.
             </div>
           </div>
 
           {/* Step 2 */}
-          <div style={{ background: 'var(--bg-card)', padding: 20, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--bg-card)', padding: 18, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <Zap size={18} color="#4f46e5" />
               <span style={{ fontSize: 12, fontWeight: 800, color: '#4f46e5' }}>STEP 02</span>
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>FastAPI Gateway</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>FastAPI Gateway</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
               Validates ingest API keys, batches payloads, and writes asynchronously to Timescale/ClickHouse.
             </div>
           </div>
 
           {/* Step 3 */}
-          <div style={{ background: 'var(--bg-card)', padding: 20, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--bg-card)', padding: 18, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <Terminal size={18} color="#e11d48" />
               <span style={{ fontSize: 12, fontWeight: 800, color: '#e11d48' }}>STEP 03</span>
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Symbolicator Engine</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Symbolicator Engine</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
               Resolves minified stack traces against uploaded source maps in memory with LRU caching.
             </div>
           </div>
 
           {/* Step 4 */}
-          <div style={{ background: 'var(--bg-card)', padding: 20, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--bg-card)', padding: 18, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <Bell size={18} color="#d97706" />
               <span style={{ fontSize: 12, fontWeight: 800, color: '#d97706' }}>STEP 04</span>
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Alert State Machine</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Alert State Machine</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
               Continuously evaluates error rate and latency SLAs. Dispatches webhooks & Slack alerts.
             </div>
           </div>
 
           {/* Step 5 */}
-          <div style={{ background: 'var(--bg-card)', padding: 20, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--bg-card)', padding: 18, borderRadius: 12, border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <BarChart3 size={18} color="#059669" />
               <span style={{ fontSize: 12, fontWeight: 800, color: '#059669' }}>STEP 05</span>
             </div>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Executive Console</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Executive Console</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>
               Interactive SVG timeseries, waterfall trees, and multi-tenant telemetry dashboards.
             </div>
@@ -867,20 +932,22 @@ fetch('/api/v1/checkout', {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '12px 20px',
+            padding: '12px 18px',
             borderBottom: '1px solid var(--border-subtle)',
-            background: 'var(--bg-card)'
+            background: 'var(--bg-card)',
+            flexWrap: 'wrap',
+            gap: 10
           }}>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               <button
                 onClick={() => setActiveSnippetTab('npm')}
                 style={{
                   background: activeSnippetTab === 'npm' ? '#4f46e5' : 'transparent',
                   color: activeSnippetTab === 'npm' ? '#fff' : 'var(--text-muted)',
                   border: 'none',
-                  padding: '6px 14px',
+                  padding: '6px 12px',
                   borderRadius: 6,
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: 700,
                   cursor: 'pointer'
                 }}
@@ -893,9 +960,9 @@ fetch('/api/v1/checkout', {
                   background: activeSnippetTab === 'html' ? '#4f46e5' : 'transparent',
                   color: activeSnippetTab === 'html' ? '#fff' : 'var(--text-muted)',
                   border: 'none',
-                  padding: '6px 14px',
+                  padding: '6px 12px',
                   borderRadius: 6,
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: 700,
                   cursor: 'pointer'
                 }}
@@ -908,9 +975,9 @@ fetch('/api/v1/checkout', {
                   background: activeSnippetTab === 'trace' ? '#4f46e5' : 'transparent',
                   color: activeSnippetTab === 'trace' ? '#fff' : 'var(--text-muted)',
                   border: 'none',
-                  padding: '6px 14px',
+                  padding: '6px 12px',
                   borderRadius: 6,
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: 700,
                   cursor: 'pointer'
                 }}
@@ -941,19 +1008,22 @@ fetch('/api/v1/checkout', {
           </div>
 
           {/* Code Text Content */}
-          <div style={{ padding: 24, overflowX: 'auto', background: theme === 'light' ? '#0f172a' : '#090b10' }}>
+          <div style={{ padding: 'clamp(14px, 3vw, 24px)', overflowX: 'auto', background: theme === 'light' ? '#0f172a' : '#090b10' }}>
             <pre style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: 13.5,
+              fontSize: 13,
               lineHeight: 1.6,
               color: '#f8fafc',
-              margin: 0
+              margin: 0,
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word'
             }}>
               <code>{snippets[activeSnippetTab]}</code>
             </pre>
           </div>
         </div>
       </section>
+
 
       {/* ========================================================================= */}
       {/* 7. HIGH-CONVERTING BOTTOM CTA */}

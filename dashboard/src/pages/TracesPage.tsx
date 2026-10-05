@@ -48,11 +48,11 @@ export const TracesPage: React.FC<TracesPageProps> = ({ appId }) => {
   };
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: 'clamp(14px, 3vw, 24px) clamp(12px, 3vw, 28px)', display: 'flex', flexDirection: 'column', gap: 'clamp(16px, 3vw, 24px)', minWidth: 0 }}>
       {/* Page Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+          <h1 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
             Transactions & Distributed Traces
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -61,7 +61,7 @@ export const TracesPage: React.FC<TracesPageProps> = ({ appId }) => {
         </div>
 
         {/* View Switcher */}
-        <div style={{ display: 'flex', background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: 3 }}>
+        <div style={{ display: 'flex', background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: 3, flexWrap: 'wrap', gap: 4 }}>
           <button
             onClick={() => setActiveView('transactions')}
             style={{
@@ -100,7 +100,7 @@ export const TracesPage: React.FC<TracesPageProps> = ({ appId }) => {
       {activeView === 'service_map' && serviceMap ? (
         <ServiceMap data={serviceMap} />
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: 20, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: 20, alignItems: 'start' }}>
           {/* Transactions List */}
           <div className="glass-panel" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', padding: '4px 6px 10px', borderBottom: '1px solid var(--border-subtle)' }}>
@@ -122,14 +122,14 @@ export const TracesPage: React.FC<TracesPageProps> = ({ appId }) => {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 4 }}>
                     <span className="badge badge-info">{tx.service}</span>
                     <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{tx.request_count.toLocaleString()} reqs</span>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', marginBottom: 6 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', marginBottom: 6, wordBreak: 'break-word' }}>
                     {tx.name}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', flexWrap: 'wrap', gap: 6 }}>
                     <span>Avg: <strong style={{ color: 'var(--text-main)' }}>{tx.avg_duration_ms}ms</strong></span>
                     <span>P95: <strong style={{ color: tx.p95_duration_ms > 500 ? '#e11d48' : '#d97706' }}>{tx.p95_duration_ms}ms</strong></span>
                     <span style={{ color: tx.error_rate_percent > 0 ? '#e11d48' : '#059669', fontWeight: 700 }}>
@@ -142,18 +142,18 @@ export const TracesPage: React.FC<TracesPageProps> = ({ appId }) => {
           </div>
 
           {/* Trace Waterfall Breakdown */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
             {selectedTx && (
-              <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
+              <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
                     Selected Trace Transaction
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-main)' }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-main)', wordBreak: 'break-word' }}>
                     {selectedTx.name}
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 20 }}>
+                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Total Duration</div>
                     <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
@@ -183,3 +183,4 @@ export const TracesPage: React.FC<TracesPageProps> = ({ appId }) => {
     </div>
   );
 };
+

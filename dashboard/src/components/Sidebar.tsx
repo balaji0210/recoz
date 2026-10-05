@@ -12,6 +12,8 @@ interface SidebarProps {
   selectedAppId: string;
   setSelectedAppId: (id: string) => void;
   incidentCount?: number;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -20,7 +22,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   applications,
   selectedAppId,
   setSelectedAppId,
-  incidentCount = 1
+  incidentCount = 1,
+  isMobileOpen = false,
+  onCloseMobile
 }) => {
   const navItems = [
     { id: 'landing', label: 'Product Landing', icon: Sparkles },
@@ -33,46 +37,86 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'settings', label: 'Settings & Ingest', icon: Settings }
   ];
 
-  return (
-    <aside style={{
-      width: 260,
-      minWidth: 260,
-      background: 'var(--bg-secondary)',
-      borderRight: '1px solid var(--border-subtle)',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      position: 'sticky',
-      top: 0,
-      zIndex: 40,
-      boxShadow: '1px 0 3px rgba(0, 0, 0, 0.02)'
-    }}>
-      {/* Brand Logo */}
+  const handleSelectTab = (tabId: string) => {
+    setCurrentTab(tabId);
+    if (onCloseMobile) {
+      onCloseMobile();
+    }
+  };
+
+  const sidebarContent = (
+    <aside
+      className={isMobileOpen ? 'sidebar-drawer' : 'hide-on-tablet'}
+      style={{
+        width: 260,
+        minWidth: 260,
+        background: 'var(--bg-secondary)',
+        borderRight: '1px solid var(--border-subtle)',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        position: isMobileOpen ? 'fixed' : 'sticky',
+        top: 0,
+        zIndex: isMobileOpen ? 100 : 40,
+        boxShadow: isMobileOpen ? '4px 0 24px rgba(0, 0, 0, 0.3)' : '1px 0 3px rgba(0, 0, 0, 0.02)'
+      }}
+    >
+      {/* Brand Logo & Mobile Close */}
       <div 
-        onClick={() => setCurrentTab('landing')}
-        title="View Product Landing Page"
-        style={{ padding: '20px 20px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--border-subtle)', cursor: 'pointer' }}
-      >
-        <div style={{
-          width: 38,
-          height: 38,
-          borderRadius: 10,
-          background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
+        style={{
+          padding: '20px 20px 16px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 10px rgba(79, 70, 229, 0.3)'
-        }}>
-          <Activity size={22} color="#ffffff" />
-        </div>
-        <div>
-          <div style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
-            RicozAppMon
+          justifyContent: 'space-between',
+          borderBottom: '1px solid var(--border-subtle)'
+        }}
+      >
+        <div
+          onClick={() => handleSelectTab('landing')}
+          title="View Product Landing Page"
+          style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
+        >
+          <div style={{
+            width: 38,
+            height: 38,
+            borderRadius: 10,
+            background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 10px rgba(79, 70, 229, 0.3)'
+          }}>
+            <Activity size={22} color="#ffffff" />
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>
-            Unified APM & Tracing
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
+              RicozAppMon
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>
+              Unified APM & Tracing
+            </div>
           </div>
         </div>
+
+        {isMobileOpen && onCloseMobile && (
+          <button
+            onClick={onCloseMobile}
+            aria-label="Close Navigation Menu"
+            style={{
+              background: 'var(--bg-card-hover)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 8,
+              padding: 6,
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       {/* App Switcher */}
@@ -117,7 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           return (
             <button
               key={item.id}
-              onClick={() => setCurrentTab(item.id)}
+              onClick={() => handleSelectTab(item.id)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -184,4 +228,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
     </aside>
   );
+
+  return (
+    <>
+      {isMobileOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={onCloseMobile}
+          aria-label="Close navigation overlay"
+        />
+      )}
+      {sidebarContent}
+    </>
+  );
 };
+

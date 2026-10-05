@@ -96,7 +96,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
   const activeIncidents = incidents.filter(i => i.status === 'OPEN' || i.status === 'ACKNOWLEDGED');
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: 'clamp(14px, 3vw, 24px) clamp(12px, 3vw, 28px)', display: 'flex', flexDirection: 'column', gap: 'clamp(16px, 3vw, 24px)', minWidth: 0 }}>
       {/* Toast Feedback Notification */}
       {toastMessage && (
         <div style={{
@@ -127,8 +127,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
       {/* Top Hero Banner */}
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
               APM Telemetry Dashboard
             </h1>
             <span style={{
@@ -152,7 +152,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
         </div>
 
         {/* Action Controls & Simulator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <button
             onClick={() => setAutoRefresh(prev => !prev)}
             style={{
@@ -205,9 +205,10 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          flexWrap: 'wrap',
           gap: 12
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
             <span style={{
               width: 32,
               height: 32,
@@ -217,12 +218,13 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
               alignItems: 'center',
               justifyContent: 'center',
               color: '#ffffff',
-              boxShadow: '0 2px 8px rgba(244, 63, 94, 0.3)'
+              boxShadow: '0 2px 8px rgba(244, 63, 94, 0.3)',
+              flexShrink: 0
             }}>
               <ShieldAlert size={18} />
             </span>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', color: '#e11d48' }}>
                   {activeIncidents.length} Active Incident{activeIncidents.length > 1 ? 's' : ''} Detected
                 </span>
@@ -230,7 +232,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
                   {activeIncidents[0].severity.toUpperCase()}
                 </span>
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#9f1239' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#9f1239', wordBreak: 'break-word' }}>
                 {activeIncidents[0].title}
               </div>
             </div>
@@ -258,7 +260,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
       )}
 
       {/* 5 Core Executive APM KPI Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 16 }}>
         <StatCard
           title="Active Sessions"
           value={summaryStats?.total_sessions?.toLocaleString() || overview?.total_sessions?.toLocaleString() || '1,420'}
@@ -309,7 +311,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
       />
 
       {/* Dual Section: Apdex Experience Meter & Core Web Vitals */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 20 }}>
         {/* Apdex Satisfaction Breakdown */}
         <ApdexMeter
           score={summaryStats?.apdex_score ?? 0.94}
@@ -321,7 +323,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
         {/* Core Web Vitals Quick Snapshot */}
         {vitals && (
           <div className="glass-panel" style={{ padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
                   width: 32,
@@ -352,7 +354,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: 10 }}>
               <WebVitalGauge name="LCP" fullName="Largest Contentful Paint" metric={vitals.lcp} description="Loading speed" />
               <WebVitalGauge name="INP" fullName="Interaction to Next Paint" metric={vitals.inp} description="Responsiveness" />
               <WebVitalGauge name="CLS" fullName="Cumulative Layout Shift" metric={vitals.cls} description="Visual stability" />
@@ -363,7 +365,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
       </div>
 
       {/* Critical Triage: Bottlenecks & Top Crash Exceptions */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 20 }}>
         {/* Slowest Client Routes */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -380,6 +382,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
               Waterfall <ArrowUpRight size={14} />
             </button>
           </div>
+
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {slowPages.slice(0, 4).map((page, idx) => (

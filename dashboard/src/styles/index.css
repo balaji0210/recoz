@@ -260,11 +260,12 @@ body {
 }
 
 /* Form Inputs & Selects */
-input[type="text"], input[type="search"], select, textarea {
+input[type="text"], input[type="search"], input[type="url"], input[type="number"], select, textarea {
   font-family: var(--font-sans);
   color: var(--text-main);
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
+  max-width: 100%;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -283,3 +284,103 @@ input:focus, select:focus, textarea:focus {
 .animate-pulse-dot {
   animation: pulse-dot 2s infinite ease-in-out;
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Utilities & Layout Helpers */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+  min-width: 600px;
+}
+
+/* Mobile Sidebar Drawer */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 90;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.sidebar-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(85vw, 290px);
+  z-index: 100;
+  animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive Media Queries */
+@media (max-width: 1024px) {
+  .hide-on-tablet {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  #landing-mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .stack-on-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .grid-stack-on-mobile {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .btn-primary, .btn-secondary {
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hide-on-small-mobile {
+    display: none !important;
+  }
+
+  .full-width-on-small-mobile {
+    width: 100% !important;
+  }
+}
+

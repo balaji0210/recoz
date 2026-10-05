@@ -56,10 +56,10 @@ initRicozRum({
   };
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: 'clamp(16px, 3vw, 28px)', display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+        <h1 style={{ fontSize: 'clamp(20px, 3vw, 24px)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
           Application Settings & SDK Installation
         </h1>
         <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -68,12 +68,12 @@ initRicozRum({
       </div>
 
       {/* App Credentials Card */}
-      <div className="glass-panel" style={{ padding: 22 }}>
+      <div className="glass-panel" style={{ padding: 'clamp(16px, 2.5vw, 22px)' }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Key size={18} color="var(--accent-indigo)" /> Ingestion Key & Credentials
         </h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 14, marginBottom: 18 }}>
           <div>
             <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Application Name</span>
             <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>{selectedApp?.name}</div>
@@ -94,16 +94,16 @@ initRicozRum({
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: 'var(--bg-primary)', borderRadius: 8, border: '1px solid var(--border-subtle)', fontSize: 12, color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10, padding: '12px 16px', background: 'var(--bg-primary)', borderRadius: 8, border: '1px solid var(--border-subtle)', fontSize: 12, color: 'var(--text-muted)' }}>
           <Shield size={16} color="#059669" />
           <span>Ingest tokens are SHA-256 hashed and salt-verified upon transmission. Headers: <code>X-Ricoz-Ingest-Key</code> or <code>Bearer</code> token.</span>
         </div>
       </div>
 
       {/* SDK Installation Snippets */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: 20 }}>
         {/* HTML Script Tag */}
-        <div className="glass-panel" style={{ padding: 20 }}>
+        <div className="glass-panel" style={{ padding: 'clamp(16px, 2.5vw, 20px)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>
               Option A: HTML Script Tag (&lt; 12KB)
@@ -132,7 +132,7 @@ initRicozRum({
         </div>
 
         {/* NPM Module */}
-        <div className="glass-panel" style={{ padding: 20 }}>
+        <div className="glass-panel" style={{ padding: 'clamp(16px, 2.5vw, 20px)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>
               Option B: Modern NPM / React / Next.js
@@ -163,7 +163,7 @@ initRicozRum({
 
       {/* Dogfooding Self-Monitoring Telemetry */}
       {dogfoodStats && (
-        <div className="glass-panel" style={{ padding: 22 }}>
+        <div className="glass-panel" style={{ padding: 'clamp(16px, 2.5vw, 22px)' }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Activity size={18} color="#059669" /> Ricoz Dogfooding (Self-Monitoring Status)
           </h2>
@@ -171,7 +171,7 @@ initRicozRum({
             Ricoz monitoring Ricoz: backend server memory, process CPU usage, and lifetime event counters
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 12 }}>
             <div style={{ background: 'var(--bg-primary)', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
               <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>Backend Uptime</span>
               <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)' }}>{Math.round(dogfoodStats.system?.uptime_seconds || 1420)}s</div>

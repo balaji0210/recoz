@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [selectedAppId, setSelectedAppId] = useState<string>('demo-ecommerce-app-id');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('rz_active_tab', currentTab);
@@ -93,18 +94,20 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div data-theme={theme} style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)', color: 'var(--text-main)' }}>
-      {/* Sidebar */}
+    <div data-theme={theme} style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)', color: 'var(--text-main)', overflowX: 'hidden' }}>
+      {/* Sidebar (Desktop sticky & Mobile drawer) */}
       <Sidebar
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         applications={applications}
         selectedAppId={selectedAppId}
         setSelectedAppId={setSelectedAppId}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%' }}>
         <Header
           timeRange={timeRange}
           setTimeRange={setTimeRange}
@@ -112,13 +115,14 @@ export const App: React.FC = () => {
           theme={theme}
           toggleTheme={toggleTheme}
           onGoLanding={() => setCurrentTab('landing')}
+          onToggleMobileMenu={() => setIsMobileSidebarOpen(prev => !prev)}
         />
 
         {/* Global Toast Notification */}
         {toastMessage && (
           <div style={{
-            margin: '16px 28px 0',
-            padding: '12px 20px',
+            margin: '14px clamp(14px, 3vw, 28px) 0',
+            padding: '12px 18px',
             background: theme === 'light' ? '#eef2ff' : 'rgba(99, 102, 241, 0.2)',
             border: `1px solid ${theme === 'light' ? '#c7d2fe' : '#6366f1'}`,
             borderRadius: 10,
@@ -134,10 +138,11 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        <main style={{ flex: 1 }}>
+        <main style={{ flex: 1, minWidth: 0 }}>
           {renderCurrentPage()}
         </main>
       </div>
     </div>
   );
 };
+

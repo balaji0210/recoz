@@ -45,9 +45,9 @@ export const RumPage: React.FC<RumPageProps> = ({ appId, timeRange }) => {
   };
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: 'clamp(14px, 3vw, 24px) clamp(12px, 3vw, 28px)', display: 'flex', flexDirection: 'column', gap: 'clamp(16px, 3vw, 24px)', minWidth: 0 }}>
       <div>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+        <h1 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
           Real User Monitoring (RUM)
         </h1>
         <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -57,7 +57,7 @@ export const RumPage: React.FC<RumPageProps> = ({ appId, timeRange }) => {
 
       {/* Core Web Vitals Grid */}
       {vitals && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 16 }}>
           <WebVitalGauge name="LCP" fullName="Largest Contentful Paint" metric={vitals.lcp} description="Loading speed" />
           <WebVitalGauge name="INP" fullName="Interaction to Next Paint" metric={vitals.inp} description="Responsiveness" />
           <WebVitalGauge name="CLS" fullName="Cumulative Layout Shift" metric={vitals.cls} description="Visual stability" />
@@ -67,11 +67,11 @@ export const RumPage: React.FC<RumPageProps> = ({ appId, timeRange }) => {
       )}
 
       {/* Slow Pages Table */}
-      <div className="glass-panel" style={{ padding: 20 }}>
+      <div className="glass-panel" style={{ padding: 'clamp(14px, 3vw, 20px)' }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)', marginBottom: 14 }}>
           Page Performance & Route Timing Breakdown
         </h2>
-        <div style={{ overflowX: 'auto' }}>
+        <div className="table-responsive">
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -104,9 +104,10 @@ export const RumPage: React.FC<RumPageProps> = ({ appId, timeRange }) => {
       </div>
 
       {/* Sessions Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: selectedSession ? '1fr 420px' : '1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: selectedSession ? 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))' : '1fr', gap: 20 }}>
         {/* User Sessions List */}
-        <div className="glass-panel" style={{ padding: 20 }}>
+        <div className="glass-panel" style={{ padding: 'clamp(14px, 3vw, 20px)' }}>
+
           <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)', marginBottom: 14 }}>
             Active Real User Sessions ({sessions.length})
           </h2>

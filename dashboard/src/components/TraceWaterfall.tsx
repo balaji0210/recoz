@@ -34,7 +34,7 @@ export const TraceWaterfall: React.FC<TraceWaterfallProps> = ({ waterfall }) => 
           onClick={() => setExpandedSpanId(isSelected ? null : span.span_id)}
           style={{
             display: 'grid',
-            gridTemplateColumns: '320px 1fr 110px',
+            gridTemplateColumns: '260px 1fr 90px',
             alignItems: 'center',
             padding: '11px 16px',
             background: isSelected ? '#eef2ff' : (depth % 2 === 0 ? 'var(--bg-card)' : 'var(--bg-primary)'),
@@ -160,28 +160,34 @@ export const TraceWaterfall: React.FC<TraceWaterfallProps> = ({ waterfall }) => 
         </div>
       )}
 
-      {/* Waterfall Table Header */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '320px 1fr 110px',
-        padding: '10px 16px',
-        background: 'var(--bg-primary)',
-        borderBottom: '1px solid var(--border-subtle)',
-        fontSize: 11,
-        fontWeight: 700,
-        textTransform: 'uppercase',
-        letterSpacing: '0.06em',
-        color: 'var(--text-muted)'
-      }}>
-        <div>Service & Span Hierarchy</div>
-        <div>Timeline & Offsets ({waterfall.total_duration_ms}ms total)</div>
-        <div style={{ textAlign: 'right' }}>Duration</div>
-      </div>
+      {/* Horizontal Scrollable Waterfall Container */}
+      <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div style={{ minWidth: 560 }}>
+          {/* Waterfall Table Header */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '260px 1fr 90px',
+            padding: '10px 16px',
+            background: 'var(--bg-primary)',
+            borderBottom: '1px solid var(--border-subtle)',
+            fontSize: 11,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            color: 'var(--text-muted)'
+          }}>
+            <div>Service & Span Hierarchy</div>
+            <div>Timeline & Offsets ({waterfall.total_duration_ms}ms total)</div>
+            <div style={{ textAlign: 'right' }}>Duration</div>
+          </div>
 
-      {/* Render Spans */}
-      <div>
-        {waterfall.root_spans.map(s => renderSpanRow(s, 0))}
+          {/* Render Spans */}
+          <div>
+            {waterfall.root_spans.map(s => renderSpanRow(s, 0))}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+

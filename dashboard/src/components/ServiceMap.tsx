@@ -14,8 +14,8 @@ export const ServiceMap: React.FC<ServiceMapProps> = ({ data }) => {
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+    <div className="glass-panel" style={{ padding: 'clamp(14px, 2.5vw, 24px)', overflowX: 'auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)' }}>Live Service Dependency Map</h3>
           <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Real-time topology computed from distributed traces</p>
@@ -31,7 +31,7 @@ export const ServiceMap: React.FC<ServiceMapProps> = ({ data }) => {
       </div>
 
       {/* Visual Service Nodes Flow */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, minWidth: 680, padding: '20px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 20, minWidth: 620, padding: '20px 0' }}>
         {data.nodes.map((node, idx) => (
           <React.Fragment key={node.id}>
             {/* Node Card */}

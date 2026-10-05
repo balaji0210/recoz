@@ -128,7 +128,7 @@ export const ApdexMeter: React.FC<ApdexMeterProps> = ({
           <div style={{ width: `${frustratedPct}%`, background: '#e11d48', transition: 'width 0.5s ease' }} title={`Frustrated: ${frustratedPct}%`} />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6, fontSize: 11 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ width: 8, height: 8, borderRadius: 2, background: '#059669' }} />
             <span style={{ color: 'var(--text-muted)' }}>Satisfied ({satisfiedPct}%)</span>

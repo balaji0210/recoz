@@ -130,7 +130,7 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
   };
 
   return (
-    <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ padding: 'clamp(14px, 3vw, 24px) clamp(12px, 3vw, 28px)', display: 'flex', flexDirection: 'column', gap: 'clamp(16px, 3vw, 24px)', minWidth: 0 }}>
       {/* Toast Feedback Notification */}
       {actionToast && (
         <div style={{
@@ -161,7 +161,7 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
       {/* Header */}
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+          <h1 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 900, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: 4 }}>
             Synthetic Monitoring & SLA
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -180,7 +180,7 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
       {/* SLA Summary Strip */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
         gap: 12
       }}>
         <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -215,11 +215,12 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
       </div>
 
       {/* Checks Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 18 }}>
         {checks.map((check) => {
           const isHealthy = check.status === 'HEALTHY';
           return (
-            <div key={check.id} className="glass-panel" style={{ padding: 22, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 16 }}>
+            <div key={check.id} className="glass-panel" style={{ padding: 'clamp(16px, 3vw, 22px)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 16 }}>
+
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
