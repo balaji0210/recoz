@@ -32,31 +32,32 @@ export const StatCard: React.FC<StatCardProps> = ({
   const scheme = colorMap[accentColor];
 
   return (
-    <div className="glass-panel" style={{ padding: '20px 22px', position: 'relative', overflow: 'hidden' }}>
+    <div className="glass-panel" style={{ padding: 'clamp(14px, 2.5vw, 20px)', position: 'relative', overflow: 'hidden', minWidth: 0 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>{title}</span>
         <div style={{
-          width: 36,
-          height: 36,
+          width: 34,
+          height: 34,
           borderRadius: 8,
           background: scheme.bg,
           border: `1px solid ${scheme.border}`,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          flexShrink: 0
         }}>
-          <Icon size={18} color={scheme.text} />
+          <Icon size={17} color={scheme.text} />
         </div>
       </div>
 
       {/* Main Metric Value */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-        <span style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-main)' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+        <span style={{ fontSize: 'clamp(20px, 4vw, 26px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-main)', wordBreak: 'break-word' }}>
           {value}
         </span>
         {subValue && (
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', wordBreak: 'break-word' }}>
             {subValue}
           </span>
         )}
@@ -64,7 +65,7 @@ export const StatCard: React.FC<StatCardProps> = ({
 
       {/* Trend */}
       {trend && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600 }}>
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 5, fontSize: 11, fontWeight: 600 }}>
           <span style={{ color: trend.isPositive ? '#059669' : '#e11d48' }}>
             {trend.isPositive ? '↑' : '↓'} {trend.value}
           </span>

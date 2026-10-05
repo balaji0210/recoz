@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
       }}
     >
       {/* Left: Mobile Hamburger & Search Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 240px', minWidth: 0, maxWidth: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '1 1 180px', minWidth: 0, maxWidth: '100%' }}>
         {onToggleMobileMenu && (
           <button
             onClick={onToggleMobileMenu}
@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
               background: 'var(--bg-primary)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 8,
-              padding: '8px 10px',
+              padding: '7px 9px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -59,28 +59,29 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        <div style={{ position: 'relative', flex: 1, minWidth: 140, maxWidth: 380 }}>
-          <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+        <div style={{ position: 'relative', flex: 1, minWidth: 80, maxWidth: 380 }}>
+          <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
-            placeholder="Search traces, errors, spans..."
+            placeholder="Search telemetry..."
             style={{
               width: '100%',
               background: 'var(--bg-primary)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 8,
-              padding: '8px 12px 8px 36px',
+              padding: '7px 10px 7px 32px',
               color: 'var(--text-main)',
               fontSize: 12,
               outline: 'none',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              boxSizing: 'border-box'
             }}
           />
         </div>
       </div>
 
       {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
         {/* Time Range Selector */}
         <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: 2 }}>
           {['1h', '24h', '7d', '30d'].map((tr) => {
@@ -95,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
                   boxShadow: isSelected ? 'var(--shadow-sm)' : 'none',
                   border: 'none',
                   borderRadius: 6,
-                  padding: '5px 8px',
+                  padding: '4px 6px',
                   fontSize: 11,
                   fontWeight: isSelected ? 700 : 500,
                   cursor: 'pointer',

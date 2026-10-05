@@ -191,10 +191,10 @@ fetch('/api/v1/checkout', {
         minHeight: 68
       }}>
         {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={onLaunchApp}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', minWidth: 0 }} onClick={onLaunchApp}>
           <div style={{
-            width: 38,
-            height: 38,
+            width: 36,
+            height: 36,
             borderRadius: 10,
             background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
             display: 'flex',
@@ -203,13 +203,13 @@ fetch('/api/v1/checkout', {
             boxShadow: '0 4px 14px rgba(79, 70, 229, 0.35)',
             flexShrink: 0
           }}>
-            <Activity size={22} color="#ffffff" />
+            <Activity size={20} color="#ffffff" />
           </div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: 18, letterSpacing: '-0.03em', lineHeight: 1.2 }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.03em', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
               Ricoz<span style={{ color: '#4f46e5' }}>AppMon</span>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
+            <div className="hide-on-mobile" style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
               Full-Stack APM & Observability
             </div>
           </div>
@@ -224,7 +224,7 @@ fetch('/api/v1/checkout', {
         </div>
 
         {/* Right CTA / Theme Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
@@ -232,10 +232,10 @@ fetch('/api/v1/checkout', {
               background: 'var(--bg-secondary)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 8,
-              padding: '7px 10px',
+              padding: '7px 9px',
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 5,
               color: 'var(--text-main)',
               fontSize: 12,
               fontWeight: 600,
@@ -248,16 +248,16 @@ fetch('/api/v1/checkout', {
 
           <button
             onClick={onLaunchApp}
-            className="btn-primary"
+            className="btn-primary hide-on-small-mobile"
             style={{
-              padding: '8px 14px',
-              fontSize: 13,
+              padding: '7px 12px',
+              fontSize: 12,
               borderRadius: 8,
               fontWeight: 700
             }}
           >
             <span>Launch Console</span>
-            <ArrowRight size={14} />
+            <ArrowRight size={13} />
           </button>
 
           {/* Mobile Hamburger Menu Toggle */}
@@ -267,7 +267,7 @@ fetch('/api/v1/checkout', {
             className="btn-secondary"
             style={{
               display: 'none',
-              padding: '7px 10px',
+              padding: '7px 9px',
               borderRadius: 8
             }}
             id="landing-mobile-menu-btn"
@@ -337,15 +337,18 @@ fetch('/api/v1/checkout', {
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 10,
-          padding: '6px 16px',
+          justifyContent: 'center',
+          gap: 8,
+          padding: '6px 14px',
           borderRadius: 24,
           background: theme === 'light' ? '#eef2ff' : 'rgba(99, 102, 241, 0.15)',
           border: '1px solid var(--border-subtle)',
           color: theme === 'light' ? '#4338ca' : '#a5b4fc',
-          fontSize: 13,
+          fontSize: 'clamp(11px, 2.5vw, 13px)',
           fontWeight: 700,
           marginBottom: 24,
+          maxWidth: '100%',
+          boxSizing: 'border-box',
           boxShadow: 'var(--shadow-sm)'
         }}>
           <span style={{
@@ -353,17 +356,18 @@ fetch('/api/v1/checkout', {
             height: 8,
             borderRadius: '50%',
             background: '#10b981',
-            display: 'inline-block'
+            display: 'inline-block',
+            flexShrink: 0
           }} className="animate-pulse-dot" />
           <span>v1.2.0 Production Ready • Real-Time Telemetry Pipeline</span>
-          <ChevronRight size={14} />
+          <ChevronRight size={14} style={{ flexShrink: 0 }} />
         </div>
 
         {/* Main Headline */}
         <h1 style={{
-          fontSize: 'clamp(34px, 5vw, 62px)',
+          fontSize: 'clamp(30px, 5vw, 62px)',
           fontWeight: 900,
-          lineHeight: 1.1,
+          lineHeight: 1.15,
           letterSpacing: '-0.04em',
           maxWidth: 960,
           margin: '0 auto 24px',
@@ -382,7 +386,7 @@ fetch('/api/v1/checkout', {
 
         {/* Subtitle */}
         <p style={{
-          fontSize: 'clamp(16px, 1.8vw, 20px)',
+          fontSize: 'clamp(15px, 1.8vw, 20px)',
           color: 'var(--text-secondary)',
           maxWidth: 780,
           margin: '0 auto 36px',
@@ -398,7 +402,7 @@ fetch('/api/v1/checkout', {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 16,
+          gap: 12,
           flexWrap: 'wrap',
           marginBottom: 48
         }}>
@@ -406,30 +410,30 @@ fetch('/api/v1/checkout', {
             onClick={onLaunchApp}
             className="btn-primary"
             style={{
-              padding: '14px 32px',
-              fontSize: 16,
+              padding: 'clamp(10px, 2.5vw, 14px) clamp(18px, 4vw, 32px)',
+              fontSize: 'clamp(14px, 2vw, 16px)',
               borderRadius: 12,
               fontWeight: 800,
               boxShadow: '0 8px 24px rgba(79, 70, 229, 0.4)'
             }}
           >
-            <Activity size={20} />
+            <Activity size={18} />
             <span>Open APM Dashboard</span>
-            <ArrowRight size={18} />
+            <ArrowRight size={16} />
           </button>
 
           <a
             href="#quickstart"
             className="btn-secondary"
             style={{
-              padding: '14px 28px',
-              fontSize: 15,
+              padding: 'clamp(10px, 2.5vw, 14px) clamp(16px, 3.5vw, 28px)',
+              fontSize: 'clamp(13px, 2vw, 15px)',
               borderRadius: 12,
               fontWeight: 700,
               textDecoration: 'none'
             }}
           >
-            <Code2 size={18} color="#4f46e5" />
+            <Code2 size={17} color="#4f46e5" />
             <span>View SDK Quickstart</span>
           </a>
 
@@ -438,14 +442,14 @@ fetch('/api/v1/checkout', {
             disabled={simulating}
             className="btn-secondary"
             style={{
-              padding: '14px 24px',
-              fontSize: 14,
+              padding: 'clamp(10px, 2.5vw, 14px) clamp(14px, 3vw, 24px)',
+              fontSize: 'clamp(12px, 1.8vw, 14px)',
               borderRadius: 12,
               fontWeight: 600,
               cursor: simulating ? 'wait' : 'pointer'
             }}
           >
-            <Zap size={16} color="#d97706" />
+            <Zap size={15} color="#d97706" />
             <span>{simulating ? 'Testing Ingest...' : simSuccess ? '✓ Ingestion Responded 200 OK' : 'Test Ingest Latency'}</span>
           </button>
         </div>

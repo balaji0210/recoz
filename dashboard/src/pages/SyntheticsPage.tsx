@@ -27,6 +27,20 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    if (showCreateModal || testResult) {
+      document.body.classList.add('scroll-locked');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.classList.remove('scroll-locked');
+      document.body.style.overflow = '';
+    };
+  }, [showCreateModal, testResult]);
+
+  useEffect(() => {
     loadChecks();
   }, [appId]);
 
@@ -566,7 +580,7 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
             </div>
 
             {/* Metrics Triad */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 120px), 1fr))', gap: 10, marginBottom: 16 }}>
               <div style={{ background: 'var(--bg-primary)', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>STATUS</span>
                 <div style={{ fontSize: 15, fontWeight: 900, color: testResult.status === 'SUCCESS' ? '#059669' : '#e11d48' }}>
