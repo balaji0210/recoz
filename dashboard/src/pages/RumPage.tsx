@@ -126,6 +126,8 @@ export const RumPage: React.FC<RumPageProps> = ({ appId, timeRange }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 10,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}

@@ -339,8 +339,8 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
                     transition: 'all 0.2s ease'
                   }}
                 >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <div style={{ flex: '1 1 280px', minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
                       <span className={`badge ${inc.severity === 'critical' ? 'badge-danger' : 'badge-warning'}`}>
                         {inc.severity}
                       </span>
@@ -372,7 +372,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ appId }) => {
                       )}
                     </div>
 
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', marginBottom: 4 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', marginBottom: 4, wordBreak: 'break-word' }}>
                       {inc.title}
                     </div>
 

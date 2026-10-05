@@ -393,6 +393,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: 10,
                   padding: '10px 14px',
                   borderRadius: 8,
                   background: 'var(--bg-primary)',
@@ -401,13 +403,13 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
                   transition: 'all 0.15s ease'
                 }}
               >
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>{page.route}</div>
+                <div style={{ minWidth: 0, flex: '1 1 180px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', wordBreak: 'break-all' }}>{page.route}</div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                     {page.page_views.toLocaleString()} visits • Avg {page.avg_load_time_ms}ms
                   </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <div style={{
                     fontSize: 13,
                     fontWeight: 800,
@@ -425,7 +427,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
 
         {/* Top Active Error Crash Groups */}
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
             <div>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-main)' }}>
                 Top Unhandled Exceptions
@@ -449,6 +451,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: 10,
                   padding: '12px 14px',
                   borderRadius: 8,
                   background: 'var(--bg-primary)',
@@ -457,8 +461,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
                   transition: 'all 0.15s ease'
                 }}
               >
-                <div style={{ overflow: 'hidden', paddingRight: 10 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <div style={{ minWidth: 0, flex: '1 1 200px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
                     <span className="badge badge-danger">{err.error_type}</span>
                     <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                       v{err.last_release}
@@ -475,11 +479,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
                       {err.status}
                     </span>
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-main)', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-main)', fontWeight: 600, wordBreak: 'break-word' }}>
                     {err.message}
                   </div>
                 </div>
-                <div style={{ textAlign: 'right', minWidth: 60 }}>
+                <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 50 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>{err.occurrence_count}</div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>events</div>
                 </div>
