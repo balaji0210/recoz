@@ -31,9 +31,9 @@ export const ApdexMeter: React.FC<ApdexMeterProps> = ({
   const frustratedPct = Math.max(0, 100 - satisfiedPct - toleratingPct);
 
   return (
-    <div className="glass-panel" style={{ padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="glass-panel" style={{ padding: 'clamp(14px, 2.5vw, 22px)', display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{
             width: 32,
@@ -43,7 +43,8 @@ export const ApdexMeter: React.FC<ApdexMeterProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: config.color
+            color: config.color,
+            flexShrink: 0
           }}>
             <Gauge size={18} />
           </div>
@@ -65,14 +66,15 @@ export const ApdexMeter: React.FC<ApdexMeterProps> = ({
           border: `1px solid ${config.border}`,
           fontSize: 11,
           fontWeight: 700,
-          letterSpacing: '0.04em'
+          letterSpacing: '0.04em',
+          flexShrink: 0
         }}>
           {status.toUpperCase()}
         </span>
       </div>
 
       {/* Main Score & Radial Gauge representation */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24, padding: '10px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 18, padding: '6px 0' }}>
         <div style={{ position: 'relative', width: 90, height: 90, flexShrink: 0 }}>
           <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
             {/* Background circle */}

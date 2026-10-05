@@ -354,7 +354,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ appId, timeRange, se
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 170px), 1fr))', gap: 12 }}>
               <WebVitalGauge name="LCP" fullName="Largest Contentful Paint" metric={vitals.lcp} description="Loading speed" />
               <WebVitalGauge name="INP" fullName="Interaction to Next Paint" metric={vitals.inp} description="Responsiveness" />
               <WebVitalGauge name="CLS" fullName="Cumulative Layout Shift" metric={vitals.cls} description="Visual stability" />

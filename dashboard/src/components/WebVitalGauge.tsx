@@ -41,23 +41,27 @@ export const WebVitalGauge: React.FC<WebVitalGaugeProps> = ({
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <div className="glass-panel" style={{ padding: 'clamp(12px, 2.5vw, 16px)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 10, minWidth: 0 }}>
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>{name}</span>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{fullName}</span>
-          </div>
-          <span className={`badge ${getBadgeClass(metric.rating)}`}>
+        {/* Top: Metric Code + Rating Badge */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 3 }}>
+          <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>{name}</span>
+          <span className={`badge ${getBadgeClass(metric.rating)}`} style={{ fontSize: 10, padding: '2px 7px', flexShrink: 0 }}>
             {metric.rating.replace('_', ' ')}
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, margin: '10px 0 12px' }}>
-          <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-main)' }}>
+        {/* Full Name Subtitle */}
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.3, marginBottom: 8, wordBreak: 'break-word' }}>
+          {fullName}
+        </div>
+
+        {/* Big Metric Value */}
+        <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
+          <span style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 800, color: 'var(--text-main)' }}>
             {metric.value !== null ? metric.value : '--'}
           </span>
-          <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600 }}>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>
             {metric.unit}
           </span>
         </div>
@@ -77,7 +81,8 @@ export const WebVitalGauge: React.FC<WebVitalGaugeProps> = ({
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)' }}>
+        {/* Target SLA and Description */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4, fontSize: 11, color: 'var(--text-muted)' }}>
           <span>Target: ≤ {metric.good_threshold} {metric.unit}</span>
           <span>{description}</span>
         </div>
