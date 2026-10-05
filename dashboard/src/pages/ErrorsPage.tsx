@@ -331,29 +331,29 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
 
             {/* Symbolicated Stack Trace Frame */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <FileCode size={16} color="var(--accent-indigo)" />
                   Symbolicated TypeScript Source Trace
                 </h3>
-                <span className="badge badge-info">Source Map Applied</span>
+                <span className="badge badge-info" style={{ whiteSpace: 'nowrap' }}>Source Map Applied</span>
               </div>
 
               {groupDetail?.latest_event?.parsed_frames ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {groupDetail.latest_event.parsed_frames.map((frame: any, fIdx: number) => (
                     <div key={fIdx} style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', borderRadius: 8, overflow: 'hidden' }}>
-                      <div style={{ padding: '8px 14px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
-                        <span style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
+                      <div style={{ padding: '8px 14px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6, fontSize: 12 }}>
+                        <span style={{ fontWeight: 700, color: 'var(--text-main)', fontFamily: 'var(--font-mono)', wordBreak: 'break-all', minWidth: 0 }}>
                           {frame.original ? `${frame.original.source}:${frame.original.line}:${frame.original.column}` : `${frame.filename}:${frame.lineno}`}
                         </span>
-                        <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', wordBreak: 'break-all', minWidth: 0 }}>
                           in {frame.function}()
                         </span>
                       </div>
 
                       {frame.original?.context && (
-                        <div style={{ padding: '8px 0', fontFamily: 'var(--font-mono)', fontSize: 12 }}>
+                        <div style={{ padding: '8px 0', fontFamily: 'var(--font-mono)', fontSize: 12, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                           {frame.original.context.map((ctx: any, cIdx: number) => (
                             <div
                               key={cIdx}
@@ -361,14 +361,15 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 padding: '2px 14px',
+                                minWidth: 'max-content',
                                 background: ctx.is_error_line ? '#fff1f2' : 'transparent',
                                 borderLeft: ctx.is_error_line ? '3px solid #e11d48' : '3px solid transparent'
                               }}
                             >
-                              <span style={{ width: 40, color: 'var(--text-muted)', userSelect: 'none' }}>
+                              <span style={{ width: 40, flexShrink: 0, color: 'var(--text-muted)', userSelect: 'none' }}>
                                 {ctx.line}
                               </span>
-                              <span style={{ color: ctx.is_error_line ? '#be123c' : 'var(--text-main)', fontWeight: ctx.is_error_line ? 700 : 500 }}>
+                              <span style={{ color: ctx.is_error_line ? '#be123c' : 'var(--text-main)', fontWeight: ctx.is_error_line ? 700 : 500, whiteSpace: 'pre' }}>
                                 {ctx.code}
                               </span>
                             </div>
@@ -393,10 +394,10 @@ export const ErrorsPage: React.FC<ErrorsPageProps> = ({ appId }) => {
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {groupDetail.latest_event.breadcrumbs.map((bc: any, bIdx: number) => (
-                    <div key={bIdx} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px', borderRadius: 6, background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', fontSize: 12 }}>
-                      <span className="badge badge-info">{bc.category}</span>
-                      <span style={{ color: 'var(--text-main)', fontWeight: 600, flex: 1 }}>{bc.message}</span>
-                      <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>T-{(Date.now() - bc.timestamp) / 1000}s</span>
+                    <div key={bIdx} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 6, background: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', fontSize: 12, flexWrap: 'wrap' }}>
+                      <span className="badge badge-info" style={{ flexShrink: 0 }}>{bc.category}</span>
+                      <span style={{ color: 'var(--text-main)', fontWeight: 600, flex: '1 1 180px', minWidth: 0, wordBreak: 'break-word' }}>{bc.message}</span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: 11, flexShrink: 0, marginLeft: 'auto' }}>T-{(Date.now() - bc.timestamp) / 1000}s</span>
                     </div>
                   ))}
                 </div>

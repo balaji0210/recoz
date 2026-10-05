@@ -236,7 +236,7 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
             <div key={check.id} className="glass-panel" style={{ padding: 'clamp(16px, 3vw, 22px)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 16 }}>
 
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span className={`badge ${isHealthy ? 'badge-healthy' : 'badge-danger'}`}>
                       {check.status}
@@ -301,7 +301,7 @@ export const SyntheticsPage: React.FC<SyntheticsPageProps> = ({ appId }) => {
               </div>
 
               {/* Action Bar */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 12, borderTop: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 12, borderTop: '1px solid var(--border-subtle)', flexWrap: 'wrap', gap: 8 }}>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                   Last evaluated: <strong style={{ color: 'var(--text-main)' }}>Just now</strong>
                 </span>
