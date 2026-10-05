@@ -108,7 +108,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div data-theme={theme} style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)', color: 'var(--text-main)', overflowX: 'hidden' }}>
+    <div data-theme={theme} style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)', color: 'var(--text-main)', overflowX: 'clip' }}>
       {/* Sidebar (Desktop sticky & Mobile drawer) */}
       <Sidebar
         currentTab={currentTab}

@@ -171,7 +171,7 @@ fetch('/api/v1/checkout', {
       background: 'var(--bg-primary)',
       color: 'var(--text-main)',
       fontFamily: 'var(--font-sans)',
-      overflowX: 'hidden'
+      overflowX: 'clip'
     }}>
       {/* ========================================================================= */}
       {/* 1. TOP NAVIGATION BAR */}
@@ -179,7 +179,8 @@ fetch('/api/v1/checkout', {
       <nav style={{
         position: 'sticky',
         top: 0,
-        zIndex: 50,
+        zIndex: 100,
+        width: '100%',
         background: 'var(--bg-glass)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',

@@ -31,7 +31,8 @@ export const Header: React.FC<HeaderProps> = ({
         padding: '10px clamp(12px, 3vw, 28px)',
         position: 'sticky',
         top: 0,
-        zIndex: 30,
+        zIndex: 40,
+        width: '100%',
         gap: 12,
         flexWrap: 'wrap'
       }}
