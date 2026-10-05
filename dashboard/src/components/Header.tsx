@@ -151,7 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
             style={{ fontSize: 12, padding: '7px 10px' }}
             title="View Product Landing Page"
           >
-            <Sparkles size={14} color="#6366f1" />
+            <Sparkles size={14} color="var(--primary)" />
             <span>Landing</span>
           </button>
         )}
@@ -164,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({
             style={{ fontSize: 12, padding: '7px 12px' }}
             title="Simulate 15 live user sessions"
           >
-            <Zap size={14} />
+            <Zap size={14} color="#C9A96E" />
             <span className="hide-on-small-mobile">Simulate</span>
           </button>
         )}
@@ -175,17 +175,17 @@ export const Header: React.FC<HeaderProps> = ({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #4f46e5, #06b6d4)',
+            background: 'linear-gradient(135deg, #6B1A1A, #C9A96E)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
             fontWeight: 700,
             fontSize: 11,
-            boxShadow: '0 2px 6px rgba(79, 70, 229, 0.25)',
+            boxShadow: '0 2px 6px rgba(107, 26, 26, 0.25)',
             flexShrink: 0
           }}>
-            AD
+            RZ
           </div>
           <div className="hide-on-mobile">
             <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.2 }}>Admin</div>

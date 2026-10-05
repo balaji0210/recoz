@@ -77,24 +77,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           title="View Product Landing Page"
           style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
         >
-          <div style={{
-            width: 38,
-            height: 38,
-            borderRadius: 10,
-            background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 10px rgba(79, 70, 229, 0.3)'
-          }}>
-            <Activity size={22} color="#ffffff" />
+          <div className="logo-box" style={{ width: 38, height: 38, fontSize: 17 }}>
+            <span>R</span>
           </div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
-              RicozAppMon
+            <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: 'var(--text-main)', lineHeight: 1.1 }}>
+              Rico<span style={{ color: 'var(--primary)' }}>Z</span> <span style={{ fontSize: 11, fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase' }}>APM</span>
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>
-              Unified APM & Tracing
+              Enterprise Observability
             </div>
           </div>
         </div>
@@ -169,9 +160,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 justifyContent: 'space-between',
                 padding: '10px 12px',
                 borderRadius: 8,
-                border: isActive ? '1px solid #c7d2fe' : '1px solid transparent',
-                background: isActive ? '#eef2ff' : 'transparent',
-                color: isActive ? '#4338ca' : 'var(--text-secondary)',
+                border: isActive ? '1px solid var(--primary)' : '1px solid transparent',
+                background: isActive ? 'rgba(107, 26, 26, 0.08)' : 'transparent',
+                color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: 13,
                 cursor: 'pointer',
@@ -192,7 +183,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Icon size={18} color={isActive ? '#4f46e5' : 'var(--text-muted)'} />
+                <Icon size={18} color={isActive ? 'var(--primary)' : 'var(--text-muted)'} />
                 <span>{item.label}</span>
               </div>
               {item.badge && (

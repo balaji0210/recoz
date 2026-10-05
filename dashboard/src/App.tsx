@@ -12,9 +12,19 @@ import { LandingPage } from './pages/LandingPage';
 import { api } from './api/client';
 import { Application } from './types';
 
+const VALID_TABS = ['landing', 'overview', 'rum', 'errors', 'traces', 'synthetics', 'alerts', 'settings'];
+
 export const App: React.FC = () => {
+  // Always default to landing page when user enters the website unless a direct valid hash is provided
   const [currentTab, setCurrentTab] = useState<string>(() => {
-    return localStorage.getItem('rz_active_tab') || 'overview';
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+      if (VALID_TABS.includes(hash)) {
+        return hash;
+      }
+    }
+    // Default entry landing
+    return 'landing';
   });
   const [timeRange, setTimeRange] = useState<string>('24h');
   const [applications, setApplications] = useState<Application[]>([]);
@@ -36,9 +46,31 @@ export const App: React.FC = () => {
     };
   }, [isMobileSidebarOpen]);
 
+  // Sync currentTab with URL hash & listen for browser back/forward buttons
   useEffect(() => {
-    localStorage.setItem('rz_active_tab', currentTab);
+    if (currentTab === 'landing') {
+      if (window.location.hash && window.location.hash !== '#landing') {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    } else {
+      if (window.location.hash !== `#${currentTab}`) {
+        window.location.hash = `#${currentTab}`;
+      }
+    }
   }, [currentTab]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+      if (VALID_TABS.includes(hash)) {
+        setCurrentTab(hash);
+      } else if (!hash) {
+        setCurrentTab('landing');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
   
   // Theme state defaulting to light mode
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {

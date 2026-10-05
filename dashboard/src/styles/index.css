@@ -1,79 +1,101 @@
-@charset "UTF-8";
-
 /* ==========================================================================
-   RICOZ APM DESIGN SYSTEM - LIGHT & DARK THEME SUPPORT
-   Default: Light Mode (User-friendly, Clean, High-contrast, Premium SaaS)
+   RICOZ APM & OBSERVABILITY DESIGN SYSTEM
+   Inspired by RicoZ Platform & Franchise Editorial Architecture
    ========================================================================== */
 
 :root,
 [data-theme="light"] {
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans: 'DM Sans', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   
+  /* RicoZ Brand Colors (Exact Franchise Crimson Red & Gold) */
+  --primary: #B81D18;
+  --primary-dark: #8E1511;
+  --primary-light: #D32F2F;
+  --accent: #C9A96E;
+  --accent-gold-light: #E5C58A;
+  --accent-gold-dark: #9E7D47;
+  
   /* Backgrounds */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
-  --bg-glass: rgba(255, 255, 255, 0.88);
-  --bg-code: #f1f5f9;
+  --bg-primary: #F8F6F5;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FBF9F8;
+  --bg-muted: #F2EFEB;
+  --bg-glass: rgba(248, 246, 245, 0.88);
+  --bg-code: #1A1212;
   
   /* Borders */
-  --border-subtle: #e2e8f0;
-  --border-hover: #cbd5e1;
-  --border-active: #6366f1;
+  --border-subtle: #E8E0DE;
+  --border-hover: #D6CBC8;
+  --border-active: #B81D18;
   
   /* Accents */
-  --accent-indigo: #4f46e5;
-  --accent-indigo-light: #6366f1;
+  --accent-indigo: #B81D18;
+  --accent-indigo-light: #D32F2F;
   --accent-cyan: #0891b2;
-  --accent-emerald: #059669;
+  --accent-emerald: #16a34a;
   --accent-amber: #d97706;
-  --accent-rose: #e11d48;
+  --accent-rose: #dc2626;
   --accent-purple: #7c3aed;
   
   /* Typography */
-  --text-main: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --text-dim: #94a3b8;
+  --text-main: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --text-muted: #6B6B6B;
+  --text-light: #9B9B9B;
+  --text-dim: #8C8482;
   
   /* Shadows */
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.18);
+  --shadow-sm: 0 1px 3px 0 rgba(107, 26, 26, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px -2px rgba(107, 26, 26, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 16px 36px -4px rgba(107, 26, 26, 0.12), 0 6px 12px -4px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 24px rgba(201, 169, 110, 0.28);
 }
 
 [data-theme="dark"] {
-  --bg-primary: #090b10;
-  --bg-secondary: #0f131c;
-  --bg-card: rgba(18, 24, 38, 0.7);
-  --bg-card-hover: rgba(28, 36, 56, 0.8);
-  --bg-glass: rgba(15, 20, 32, 0.75);
-  --bg-code: rgba(10, 14, 23, 0.8);
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans: 'DM Sans', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --primary: #9B2C2C;
+  --primary-dark: #6B1A1A;
+  --primary-light: #C53030;
+  --accent: #C9A96E;
+  --accent-gold-light: #E5C58A;
+  --accent-gold-dark: #9E7D47;
+
+  --bg-primary: #0E0909;
+  --bg-secondary: #171010;
+  --bg-card: rgba(26, 17, 17, 0.85);
+  --bg-card-hover: rgba(38, 25, 25, 0.95);
+  --bg-muted: #1F1414;
+  --bg-glass: rgba(17, 12, 12, 0.85);
+  --bg-code: #0A0606;
   
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.16);
-  --border-active: rgba(99, 102, 241, 0.4);
+  --border-subtle: rgba(232, 224, 222, 0.12);
+  --border-hover: rgba(201, 169, 110, 0.35);
+  --border-active: #C9A96E;
   
-  --accent-indigo: #6366f1;
-  --accent-indigo-light: #818cf8;
-  --accent-cyan: #06b6d4;
-  --accent-emerald: #10b981;
+  --accent-indigo: #C9A96E;
+  --accent-indigo-light: #E5C58A;
+  --accent-cyan: #22d3ee;
+  --accent-emerald: #22c55e;
   --accent-amber: #f59e0b;
-  --accent-rose: #f43f5e;
-  --accent-purple: #a855f7;
+  --accent-rose: #f87171;
+  --accent-purple: #c084fc;
   
-  --text-main: #f8fafc;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-main: #FAF6F4;
+  --text-secondary: #E3D9D5;
+  --text-muted: #A89B96;
+  --text-light: #7A6F6B;
+  --text-dim: #665C58;
   
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 24px rgba(201, 169, 110, 0.22);
 }
 
 * {
@@ -221,27 +243,73 @@ body {
   border: 1px solid rgba(99, 102, 241, 0.3);
 }
 
-/* Custom Buttons */
-.btn-primary {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-  color: #ffffff !important;
-  padding: 8px 16px;
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.logo-box {
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
   border-radius: 8px;
-  font-weight: 600;
-  font-size: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(184, 29, 24, 0.3);
+  border: 1px solid rgba(201, 169, 110, 0.3);
+}
+
+/* Custom Buttons (Matching RicoZ Franchise Action Buttons) */
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff !important;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13.5px;
+  border: none;
+  box-shadow: 0 4px 14px rgba(184, 29, 24, 0.28);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
-  background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+  box-shadow: 0 6px 18px rgba(184, 29, 24, 0.42);
+  background: var(--primary-dark);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #C9A96E 0%, #E5C58A 100%);
+  color: #1A1A1A !important;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 14px rgba(201, 169, 110, 0.35);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+}
+
+.btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201, 169, 110, 0.5);
+  background: linear-gradient(135deg, #B89759 0%, #D4B479 100%);
 }
 
 .btn-secondary {
@@ -258,11 +326,22 @@ body {
   align-items: center;
   gap: 8px;
   box-shadow: var(--shadow-sm);
+  font-family: var(--font-sans);
 }
 
 .btn-secondary:hover {
   background: var(--bg-card-hover);
-  border-color: var(--border-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.dark-banner {
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Form Inputs & Selects */
@@ -270,14 +349,15 @@ input[type="text"], input[type="search"], input[type="url"], input[type="number"
   font-family: var(--font-sans);
   color: var(--text-main);
   background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 8px;
   max-width: 100%;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--accent-indigo) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(107, 26, 26, 0.15);
 }
 
 /* Pulse Animation */
