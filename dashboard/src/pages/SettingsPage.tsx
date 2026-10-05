@@ -165,10 +165,10 @@ initRicozRum({
       {dogfoodStats && (
         <div className="glass-panel" style={{ padding: 'clamp(16px, 2.5vw, 22px)' }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Activity size={18} color="#059669" /> Ricoz Dogfooding (Self-Monitoring Status)
+            <Activity size={18} color="#059669" /> RicozAppMon Dogfooding (Self-Monitoring Status)
           </h2>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
-            Ricoz monitoring Ricoz: backend server memory, process CPU usage, and lifetime event counters
+            RicozAppMon self-monitoring: backend server memory, process CPU usage, and lifetime event counters
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 12 }}>

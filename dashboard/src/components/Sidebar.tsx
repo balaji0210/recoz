@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', color: 'var(--text-main)', lineHeight: 1.1 }}>
-              Rico<span style={{ color: 'var(--primary)' }}>Z</span> <span style={{ fontSize: 11, fontFamily: 'var(--font-sans)', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase' }}>APM</span>
+              Ricoz<span style={{ color: 'var(--primary)' }}>AppMon</span>
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>
               Enterprise Observability

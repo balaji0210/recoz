@@ -175,17 +175,17 @@ export const Header: React.FC<HeaderProps> = ({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #6B1A1A, #C9A96E)',
+            background: 'linear-gradient(135deg, #B81D18, #C9A96E)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
             fontWeight: 700,
             fontSize: 11,
-            boxShadow: '0 2px 6px rgba(107, 26, 26, 0.25)',
+            boxShadow: '0 2px 6px rgba(184, 29, 24, 0.25)',
             flexShrink: 0
           }}>
-            RZ
+            RM
           </div>
           <div className="hide-on-mobile">
             <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.2 }}>Admin</div>

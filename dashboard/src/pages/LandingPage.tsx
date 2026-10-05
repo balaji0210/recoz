@@ -39,7 +39,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   }, [mobileNavOpen]);
 
   const snippets = {
-    npm: `// 1. Install RicoZ RUM SDK
+    npm: `// 1. Install RicozAppMon RUM SDK
 npm install @ricoz/rum-sdk
 
 // 2. Initialize in your App entry point (index.tsx / main.ts)
@@ -910,7 +910,7 @@ export const franchiseTelemetry = new RicozFranchiseMonitor({
             End-to-End Ingestion Pipeline
           </div>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(26px, 3.5vw, 38px)', fontWeight: 400, letterSpacing: '-0.02em' }}>
-            How RicoZ Ingests and Correlates Telemetry
+            How RicozAppMon Ingests and Correlates Telemetry
           </h2>
         </div>
 
@@ -1014,7 +1014,7 @@ export const franchiseTelemetry = new RicozFranchiseMonitor({
             Instrument in Under 2 Minutes
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: 16, marginTop: 8 }}>
-            Copy, paste, and start receiving live traces immediately into RicoZ.
+            Copy, paste, and start receiving live traces immediately into RicozAppMon.
           </p>
         </div>
 
@@ -1184,7 +1184,7 @@ export const franchiseTelemetry = new RicozFranchiseMonitor({
             </h2>
             <p style={{ fontSize: 17, color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.6, marginBottom: 32 }}>
               Eliminate blind spots. Detect slowdowns, resolve production crashes with original stack traces,
-              and guarantee 99.99% uptime with RicoZ.
+              and guarantee 99.99% uptime with RicozAppMon.
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, flexWrap: 'wrap' }}>
